@@ -19,7 +19,7 @@ export function HomeHero() {
             <a href="#">Get Started</a>
           </Button>
           <Button size="lg" variant="outline" asChild>
-            <a href="#">Try Calculator</a>
+            <Link to="/calculator">Try Calculator</Link>
           </Button>
         </div>
       </div>

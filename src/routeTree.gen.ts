@@ -13,10 +13,13 @@
 import { Route as rootRoute } from './routes/__root'
 import { Route as HomeImport } from './routes/home'
 import { Route as ContactImport } from './routes/contact'
-import { Route as BlogImport } from './routes/blog'
+import { Route as CalculatorImport } from './routes/calculator'
+import { Route as BlogDetailImport } from './routes/blog-detail'
 import { Route as AboutImport } from './routes/about'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated/route'
-import { Route as AuthenticatedIndexImport } from './routes/_authenticated/index'
+import { Route as IndexImport } from './routes/index'
+import { Route as BlogIndexImport } from './routes/blog/index'
+import { Route as AuthenticatedDashboardImport } from './routes/_authenticated/dashboard'
 import { Route as errors503Import } from './routes/(errors)/503'
 import { Route as errors500Import } from './routes/(errors)/500'
 import { Route as errors404Import } from './routes/(errors)/404'
@@ -53,9 +56,15 @@ const ContactRoute = ContactImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
-const BlogRoute = BlogImport.update({
-  id: '/blog',
-  path: '/blog',
+const CalculatorRoute = CalculatorImport.update({
+  id: '/calculator',
+  path: '/calculator',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const BlogDetailRoute = BlogDetailImport.update({
+  id: '/blog-detail',
+  path: '/blog-detail',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -70,9 +79,21 @@ const AuthenticatedRouteRoute = AuthenticatedRouteImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
-const AuthenticatedIndexRoute = AuthenticatedIndexImport.update({
+const IndexRoute = IndexImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const BlogIndexRoute = BlogIndexImport.update({
+  id: '/blog/',
+  path: '/blog/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const AuthenticatedDashboardRoute = AuthenticatedDashboardImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 
@@ -215,6 +236,13 @@ const AuthenticatedSettingsAccountRoute =
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexImport
+      parentRoute: typeof rootRoute
+    }
     '/_authenticated': {
       id: '/_authenticated'
       path: ''
@@ -229,11 +257,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AboutImport
       parentRoute: typeof rootRoute
     }
-    '/blog': {
-      id: '/blog'
-      path: '/blog'
-      fullPath: '/blog'
-      preLoaderRoute: typeof BlogImport
+    '/blog-detail': {
+      id: '/blog-detail'
+      path: '/blog-detail'
+      fullPath: '/blog-detail'
+      preLoaderRoute: typeof BlogDetailImport
+      parentRoute: typeof rootRoute
+    }
+    '/calculator': {
+      id: '/calculator'
+      path: '/calculator'
+      fullPath: '/calculator'
+      preLoaderRoute: typeof CalculatorImport
       parentRoute: typeof rootRoute
     }
     '/contact': {
@@ -327,12 +362,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof errors503Import
       parentRoute: typeof rootRoute
     }
-    '/_authenticated/': {
-      id: '/_authenticated/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof AuthenticatedIndexImport
+    '/_authenticated/dashboard': {
+      id: '/_authenticated/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof AuthenticatedDashboardImport
       parentRoute: typeof AuthenticatedRouteImport
+    }
+    '/blog/': {
+      id: '/blog/'
+      path: '/blog'
+      fullPath: '/blog'
+      preLoaderRoute: typeof BlogIndexImport
+      parentRoute: typeof rootRoute
     }
     '/_authenticated/settings/account': {
       id: '/_authenticated/settings/account'
@@ -434,7 +476,7 @@ const AuthenticatedSettingsRouteRouteWithChildren =
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedSettingsRouteRoute: typeof AuthenticatedSettingsRouteRouteWithChildren
-  AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
+  AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedAppsIndexRoute: typeof AuthenticatedAppsIndexRoute
   AuthenticatedChatsIndexRoute: typeof AuthenticatedChatsIndexRoute
   AuthenticatedHelpCenterIndexRoute: typeof AuthenticatedHelpCenterIndexRoute
@@ -444,7 +486,7 @@ interface AuthenticatedRouteRouteChildren {
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedSettingsRouteRoute: AuthenticatedSettingsRouteRouteWithChildren,
-  AuthenticatedIndexRoute: AuthenticatedIndexRoute,
+  AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedAppsIndexRoute: AuthenticatedAppsIndexRoute,
   AuthenticatedChatsIndexRoute: AuthenticatedChatsIndexRoute,
   AuthenticatedHelpCenterIndexRoute: AuthenticatedHelpCenterIndexRoute,
@@ -456,9 +498,11 @@ const AuthenticatedRouteRouteWithChildren =
   AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
 
 export interface FileRoutesByFullPath {
+  '/': typeof IndexRoute
   '': typeof AuthenticatedRouteRouteWithChildren
   '/about': typeof AboutRoute
-  '/blog': typeof BlogRoute
+  '/blog-detail': typeof BlogDetailRoute
+  '/calculator': typeof CalculatorRoute
   '/contact': typeof ContactRoute
   '/home': typeof HomeRoute
   '/settings': typeof AuthenticatedSettingsRouteRouteWithChildren
@@ -472,7 +516,8 @@ export interface FileRoutesByFullPath {
   '/404': typeof errors404Route
   '/500': typeof errors500Route
   '/503': typeof errors503Route
-  '/': typeof AuthenticatedIndexRoute
+  '/dashboard': typeof AuthenticatedDashboardRoute
+  '/blog': typeof BlogIndexRoute
   '/settings/account': typeof AuthenticatedSettingsAccountRoute
   '/settings/appearance': typeof AuthenticatedSettingsAppearanceRoute
   '/settings/display': typeof AuthenticatedSettingsDisplayRoute
@@ -486,8 +531,11 @@ export interface FileRoutesByFullPath {
 }
 
 export interface FileRoutesByTo {
+  '/': typeof IndexRoute
+  '': typeof AuthenticatedRouteRouteWithChildren
   '/about': typeof AboutRoute
-  '/blog': typeof BlogRoute
+  '/blog-detail': typeof BlogDetailRoute
+  '/calculator': typeof CalculatorRoute
   '/contact': typeof ContactRoute
   '/home': typeof HomeRoute
   '/forgot-password': typeof authForgotPasswordRoute
@@ -500,7 +548,8 @@ export interface FileRoutesByTo {
   '/404': typeof errors404Route
   '/500': typeof errors500Route
   '/503': typeof errors503Route
-  '/': typeof AuthenticatedIndexRoute
+  '/dashboard': typeof AuthenticatedDashboardRoute
+  '/blog': typeof BlogIndexRoute
   '/settings/account': typeof AuthenticatedSettingsAccountRoute
   '/settings/appearance': typeof AuthenticatedSettingsAppearanceRoute
   '/settings/display': typeof AuthenticatedSettingsDisplayRoute
@@ -515,9 +564,11 @@ export interface FileRoutesByTo {
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
+  '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/about': typeof AboutRoute
-  '/blog': typeof BlogRoute
+  '/blog-detail': typeof BlogDetailRoute
+  '/calculator': typeof CalculatorRoute
   '/contact': typeof ContactRoute
   '/home': typeof HomeRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRouteRouteWithChildren
@@ -531,7 +582,8 @@ export interface FileRoutesById {
   '/(errors)/404': typeof errors404Route
   '/(errors)/500': typeof errors500Route
   '/(errors)/503': typeof errors503Route
-  '/_authenticated/': typeof AuthenticatedIndexRoute
+  '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/blog/': typeof BlogIndexRoute
   '/_authenticated/settings/account': typeof AuthenticatedSettingsAccountRoute
   '/_authenticated/settings/appearance': typeof AuthenticatedSettingsAppearanceRoute
   '/_authenticated/settings/display': typeof AuthenticatedSettingsDisplayRoute
@@ -547,9 +599,11 @@ export interface FileRoutesById {
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
+    | '/'
     | ''
     | '/about'
-    | '/blog'
+    | '/blog-detail'
+    | '/calculator'
     | '/contact'
     | '/home'
     | '/settings'
@@ -563,7 +617,8 @@ export interface FileRouteTypes {
     | '/404'
     | '/500'
     | '/503'
-    | '/'
+    | '/dashboard'
+    | '/blog'
     | '/settings/account'
     | '/settings/appearance'
     | '/settings/display'
@@ -576,8 +631,11 @@ export interface FileRouteTypes {
     | '/users'
   fileRoutesByTo: FileRoutesByTo
   to:
+    | '/'
+    | ''
     | '/about'
-    | '/blog'
+    | '/blog-detail'
+    | '/calculator'
     | '/contact'
     | '/home'
     | '/forgot-password'
@@ -590,7 +648,8 @@ export interface FileRouteTypes {
     | '/404'
     | '/500'
     | '/503'
-    | '/'
+    | '/dashboard'
+    | '/blog'
     | '/settings/account'
     | '/settings/appearance'
     | '/settings/display'
@@ -603,9 +662,11 @@ export interface FileRouteTypes {
     | '/users'
   id:
     | '__root__'
+    | '/'
     | '/_authenticated'
     | '/about'
-    | '/blog'
+    | '/blog-detail'
+    | '/calculator'
     | '/contact'
     | '/home'
     | '/_authenticated/settings'
@@ -619,7 +680,8 @@ export interface FileRouteTypes {
     | '/(errors)/404'
     | '/(errors)/500'
     | '/(errors)/503'
-    | '/_authenticated/'
+    | '/_authenticated/dashboard'
+    | '/blog/'
     | '/_authenticated/settings/account'
     | '/_authenticated/settings/appearance'
     | '/_authenticated/settings/display'
@@ -634,9 +696,11 @@ export interface FileRouteTypes {
 }
 
 export interface RootRouteChildren {
+  IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AboutRoute: typeof AboutRoute
-  BlogRoute: typeof BlogRoute
+  BlogDetailRoute: typeof BlogDetailRoute
+  CalculatorRoute: typeof CalculatorRoute
   ContactRoute: typeof ContactRoute
   HomeRoute: typeof HomeRoute
   authForgotPasswordRoute: typeof authForgotPasswordRoute
@@ -649,12 +713,15 @@ export interface RootRouteChildren {
   errors404Route: typeof errors404Route
   errors500Route: typeof errors500Route
   errors503Route: typeof errors503Route
+  BlogIndexRoute: typeof BlogIndexRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
+  IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AboutRoute: AboutRoute,
-  BlogRoute: BlogRoute,
+  BlogDetailRoute: BlogDetailRoute,
+  CalculatorRoute: CalculatorRoute,
   ContactRoute: ContactRoute,
   HomeRoute: HomeRoute,
   authForgotPasswordRoute: authForgotPasswordRoute,
@@ -667,6 +734,7 @@ const rootRouteChildren: RootRouteChildren = {
   errors404Route: errors404Route,
   errors500Route: errors500Route,
   errors503Route: errors503Route,
+  BlogIndexRoute: BlogIndexRoute,
 }
 
 export const routeTree = rootRoute
@@ -679,9 +747,11 @@ export const routeTree = rootRoute
     "__root__": {
       "filePath": "__root.tsx",
       "children": [
+        "/",
         "/_authenticated",
         "/about",
-        "/blog",
+        "/blog-detail",
+        "/calculator",
         "/contact",
         "/home",
         "/(auth)/forgot-password",
@@ -693,14 +763,18 @@ export const routeTree = rootRoute
         "/(errors)/403",
         "/(errors)/404",
         "/(errors)/500",
-        "/(errors)/503"
+        "/(errors)/503",
+        "/blog/"
       ]
+    },
+    "/": {
+      "filePath": "index.tsx"
     },
     "/_authenticated": {
       "filePath": "_authenticated/route.tsx",
       "children": [
         "/_authenticated/settings",
-        "/_authenticated/",
+        "/_authenticated/dashboard",
         "/_authenticated/apps/",
         "/_authenticated/chats/",
         "/_authenticated/help-center/",
@@ -711,8 +785,11 @@ export const routeTree = rootRoute
     "/about": {
       "filePath": "about.tsx"
     },
-    "/blog": {
-      "filePath": "blog.tsx"
+    "/blog-detail": {
+      "filePath": "blog-detail.tsx"
+    },
+    "/calculator": {
+      "filePath": "calculator.tsx"
     },
     "/contact": {
       "filePath": "contact.tsx"
@@ -761,9 +838,12 @@ export const routeTree = rootRoute
     "/(errors)/503": {
       "filePath": "(errors)/503.tsx"
     },
-    "/_authenticated/": {
-      "filePath": "_authenticated/index.tsx",
+    "/_authenticated/dashboard": {
+      "filePath": "_authenticated/dashboard.tsx",
       "parent": "/_authenticated"
+    },
+    "/blog/": {
+      "filePath": "blog/index.tsx"
     },
     "/_authenticated/settings/account": {
       "filePath": "_authenticated/settings/account.tsx",

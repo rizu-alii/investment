@@ -1,7 +1,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { HomeHeader } from "../home/components/HomeHeader";
 import { HomeFooter } from "../home/components/HomeFooter";
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 
 // Mock blog data with new images
 const blogPosts = [
@@ -26,6 +26,7 @@ const blogPosts = [
 ];
 
 export function BlogPage() {
+  const navigate = useNavigate();
   return (
     <div className="min-h-screen bg-background">
       <HomeHeader />
@@ -38,7 +39,7 @@ export function BlogPage() {
         </div>
         <div className="mx-auto mt-12 grid gap-8 md:grid-cols-2 lg:grid-cols-3">
           {blogPosts.map((post) => (
-            <Link key={post.id} to={`/blog/${post.id}`}>
+            <div key={post.id} onClick={() => navigate({ to: "/blog-detail", state: { blog: post } })} style={{ cursor: 'pointer' }}>
               <Card className="h-full overflow-hidden transition-colors hover:bg-muted/50">
                 <div className="aspect-video overflow-hidden">
                   <img
@@ -54,7 +55,7 @@ export function BlogPage() {
                   <CardDescription className="line-clamp-2">{post.description}</CardDescription>
                 </CardContent>
               </Card>
-            </Link>
+            </div>
           ))}
         </div>
       </main>

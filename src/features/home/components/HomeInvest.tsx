@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-// import { Link } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
 
 export function HomeInvest() {
   return (
@@ -18,7 +18,7 @@ export function HomeInvest() {
               <a href="#">Get Started</a>
             </Button>
             <Button size="lg" variant="outline" className="bg-transparent text-primary-foreground hover:bg-primary-foreground/10" asChild>
-              <a href="#">Try Calculator</a>
+              <Link to="/calculator">Try Calculator</Link>
             </Button>
           </div>
         </div>
