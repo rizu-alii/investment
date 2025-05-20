@@ -19,6 +19,18 @@ import { Route as AboutImport } from './routes/about'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated/route'
 import { Route as IndexImport } from './routes/index'
 import { Route as BlogIndexImport } from './routes/blog/index'
+import { Route as UserUsersImport } from './routes/user/users'
+import { Route as UserTasksImport } from './routes/user/tasks'
+import { Route as UserSettingsImport } from './routes/user/settings'
+import { Route as UserDashboardImport } from './routes/user/dashboard'
+import { Route as UserChatsImport } from './routes/user/chats'
+import { Route as UserAppsImport } from './routes/user/apps'
+import { Route as AdminUsersImport } from './routes/admin/users'
+import { Route as AdminTasksImport } from './routes/admin/tasks'
+import { Route as AdminSettingsImport } from './routes/admin/settings'
+import { Route as AdminDashboardImport } from './routes/admin/dashboard'
+import { Route as AdminChatsImport } from './routes/admin/chats'
+import { Route as AdminAppsImport } from './routes/admin/apps'
 import { Route as AuthenticatedDashboardImport } from './routes/_authenticated/dashboard'
 import { Route as errors503Import } from './routes/(errors)/503'
 import { Route as errors500Import } from './routes/(errors)/500'
@@ -88,6 +100,78 @@ const IndexRoute = IndexImport.update({
 const BlogIndexRoute = BlogIndexImport.update({
   id: '/blog/',
   path: '/blog/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const UserUsersRoute = UserUsersImport.update({
+  id: '/user/users',
+  path: '/user/users',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const UserTasksRoute = UserTasksImport.update({
+  id: '/user/tasks',
+  path: '/user/tasks',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const UserSettingsRoute = UserSettingsImport.update({
+  id: '/user/settings',
+  path: '/user/settings',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const UserDashboardRoute = UserDashboardImport.update({
+  id: '/user/dashboard',
+  path: '/user/dashboard',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const UserChatsRoute = UserChatsImport.update({
+  id: '/user/chats',
+  path: '/user/chats',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const UserAppsRoute = UserAppsImport.update({
+  id: '/user/apps',
+  path: '/user/apps',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const AdminUsersRoute = AdminUsersImport.update({
+  id: '/admin/users',
+  path: '/admin/users',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const AdminTasksRoute = AdminTasksImport.update({
+  id: '/admin/tasks',
+  path: '/admin/tasks',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const AdminSettingsRoute = AdminSettingsImport.update({
+  id: '/admin/settings',
+  path: '/admin/settings',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const AdminDashboardRoute = AdminDashboardImport.update({
+  id: '/admin/dashboard',
+  path: '/admin/dashboard',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const AdminChatsRoute = AdminChatsImport.update({
+  id: '/admin/chats',
+  path: '/admin/chats',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const AdminAppsRoute = AdminAppsImport.update({
+  id: '/admin/apps',
+  path: '/admin/apps',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -369,6 +453,90 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardImport
       parentRoute: typeof AuthenticatedRouteImport
     }
+    '/admin/apps': {
+      id: '/admin/apps'
+      path: '/admin/apps'
+      fullPath: '/admin/apps'
+      preLoaderRoute: typeof AdminAppsImport
+      parentRoute: typeof rootRoute
+    }
+    '/admin/chats': {
+      id: '/admin/chats'
+      path: '/admin/chats'
+      fullPath: '/admin/chats'
+      preLoaderRoute: typeof AdminChatsImport
+      parentRoute: typeof rootRoute
+    }
+    '/admin/dashboard': {
+      id: '/admin/dashboard'
+      path: '/admin/dashboard'
+      fullPath: '/admin/dashboard'
+      preLoaderRoute: typeof AdminDashboardImport
+      parentRoute: typeof rootRoute
+    }
+    '/admin/settings': {
+      id: '/admin/settings'
+      path: '/admin/settings'
+      fullPath: '/admin/settings'
+      preLoaderRoute: typeof AdminSettingsImport
+      parentRoute: typeof rootRoute
+    }
+    '/admin/tasks': {
+      id: '/admin/tasks'
+      path: '/admin/tasks'
+      fullPath: '/admin/tasks'
+      preLoaderRoute: typeof AdminTasksImport
+      parentRoute: typeof rootRoute
+    }
+    '/admin/users': {
+      id: '/admin/users'
+      path: '/admin/users'
+      fullPath: '/admin/users'
+      preLoaderRoute: typeof AdminUsersImport
+      parentRoute: typeof rootRoute
+    }
+    '/user/apps': {
+      id: '/user/apps'
+      path: '/user/apps'
+      fullPath: '/user/apps'
+      preLoaderRoute: typeof UserAppsImport
+      parentRoute: typeof rootRoute
+    }
+    '/user/chats': {
+      id: '/user/chats'
+      path: '/user/chats'
+      fullPath: '/user/chats'
+      preLoaderRoute: typeof UserChatsImport
+      parentRoute: typeof rootRoute
+    }
+    '/user/dashboard': {
+      id: '/user/dashboard'
+      path: '/user/dashboard'
+      fullPath: '/user/dashboard'
+      preLoaderRoute: typeof UserDashboardImport
+      parentRoute: typeof rootRoute
+    }
+    '/user/settings': {
+      id: '/user/settings'
+      path: '/user/settings'
+      fullPath: '/user/settings'
+      preLoaderRoute: typeof UserSettingsImport
+      parentRoute: typeof rootRoute
+    }
+    '/user/tasks': {
+      id: '/user/tasks'
+      path: '/user/tasks'
+      fullPath: '/user/tasks'
+      preLoaderRoute: typeof UserTasksImport
+      parentRoute: typeof rootRoute
+    }
+    '/user/users': {
+      id: '/user/users'
+      path: '/user/users'
+      fullPath: '/user/users'
+      preLoaderRoute: typeof UserUsersImport
+      parentRoute: typeof rootRoute
+    }
     '/blog/': {
       id: '/blog/'
       path: '/blog'
@@ -517,6 +685,18 @@ export interface FileRoutesByFullPath {
   '/500': typeof errors500Route
   '/503': typeof errors503Route
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/admin/apps': typeof AdminAppsRoute
+  '/admin/chats': typeof AdminChatsRoute
+  '/admin/dashboard': typeof AdminDashboardRoute
+  '/admin/settings': typeof AdminSettingsRoute
+  '/admin/tasks': typeof AdminTasksRoute
+  '/admin/users': typeof AdminUsersRoute
+  '/user/apps': typeof UserAppsRoute
+  '/user/chats': typeof UserChatsRoute
+  '/user/dashboard': typeof UserDashboardRoute
+  '/user/settings': typeof UserSettingsRoute
+  '/user/tasks': typeof UserTasksRoute
+  '/user/users': typeof UserUsersRoute
   '/blog': typeof BlogIndexRoute
   '/settings/account': typeof AuthenticatedSettingsAccountRoute
   '/settings/appearance': typeof AuthenticatedSettingsAppearanceRoute
@@ -549,6 +729,18 @@ export interface FileRoutesByTo {
   '/500': typeof errors500Route
   '/503': typeof errors503Route
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/admin/apps': typeof AdminAppsRoute
+  '/admin/chats': typeof AdminChatsRoute
+  '/admin/dashboard': typeof AdminDashboardRoute
+  '/admin/settings': typeof AdminSettingsRoute
+  '/admin/tasks': typeof AdminTasksRoute
+  '/admin/users': typeof AdminUsersRoute
+  '/user/apps': typeof UserAppsRoute
+  '/user/chats': typeof UserChatsRoute
+  '/user/dashboard': typeof UserDashboardRoute
+  '/user/settings': typeof UserSettingsRoute
+  '/user/tasks': typeof UserTasksRoute
+  '/user/users': typeof UserUsersRoute
   '/blog': typeof BlogIndexRoute
   '/settings/account': typeof AuthenticatedSettingsAccountRoute
   '/settings/appearance': typeof AuthenticatedSettingsAppearanceRoute
@@ -583,6 +775,18 @@ export interface FileRoutesById {
   '/(errors)/500': typeof errors500Route
   '/(errors)/503': typeof errors503Route
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/admin/apps': typeof AdminAppsRoute
+  '/admin/chats': typeof AdminChatsRoute
+  '/admin/dashboard': typeof AdminDashboardRoute
+  '/admin/settings': typeof AdminSettingsRoute
+  '/admin/tasks': typeof AdminTasksRoute
+  '/admin/users': typeof AdminUsersRoute
+  '/user/apps': typeof UserAppsRoute
+  '/user/chats': typeof UserChatsRoute
+  '/user/dashboard': typeof UserDashboardRoute
+  '/user/settings': typeof UserSettingsRoute
+  '/user/tasks': typeof UserTasksRoute
+  '/user/users': typeof UserUsersRoute
   '/blog/': typeof BlogIndexRoute
   '/_authenticated/settings/account': typeof AuthenticatedSettingsAccountRoute
   '/_authenticated/settings/appearance': typeof AuthenticatedSettingsAppearanceRoute
@@ -618,6 +822,18 @@ export interface FileRouteTypes {
     | '/500'
     | '/503'
     | '/dashboard'
+    | '/admin/apps'
+    | '/admin/chats'
+    | '/admin/dashboard'
+    | '/admin/settings'
+    | '/admin/tasks'
+    | '/admin/users'
+    | '/user/apps'
+    | '/user/chats'
+    | '/user/dashboard'
+    | '/user/settings'
+    | '/user/tasks'
+    | '/user/users'
     | '/blog'
     | '/settings/account'
     | '/settings/appearance'
@@ -649,6 +865,18 @@ export interface FileRouteTypes {
     | '/500'
     | '/503'
     | '/dashboard'
+    | '/admin/apps'
+    | '/admin/chats'
+    | '/admin/dashboard'
+    | '/admin/settings'
+    | '/admin/tasks'
+    | '/admin/users'
+    | '/user/apps'
+    | '/user/chats'
+    | '/user/dashboard'
+    | '/user/settings'
+    | '/user/tasks'
+    | '/user/users'
     | '/blog'
     | '/settings/account'
     | '/settings/appearance'
@@ -681,6 +909,18 @@ export interface FileRouteTypes {
     | '/(errors)/500'
     | '/(errors)/503'
     | '/_authenticated/dashboard'
+    | '/admin/apps'
+    | '/admin/chats'
+    | '/admin/dashboard'
+    | '/admin/settings'
+    | '/admin/tasks'
+    | '/admin/users'
+    | '/user/apps'
+    | '/user/chats'
+    | '/user/dashboard'
+    | '/user/settings'
+    | '/user/tasks'
+    | '/user/users'
     | '/blog/'
     | '/_authenticated/settings/account'
     | '/_authenticated/settings/appearance'
@@ -713,6 +953,18 @@ export interface RootRouteChildren {
   errors404Route: typeof errors404Route
   errors500Route: typeof errors500Route
   errors503Route: typeof errors503Route
+  AdminAppsRoute: typeof AdminAppsRoute
+  AdminChatsRoute: typeof AdminChatsRoute
+  AdminDashboardRoute: typeof AdminDashboardRoute
+  AdminSettingsRoute: typeof AdminSettingsRoute
+  AdminTasksRoute: typeof AdminTasksRoute
+  AdminUsersRoute: typeof AdminUsersRoute
+  UserAppsRoute: typeof UserAppsRoute
+  UserChatsRoute: typeof UserChatsRoute
+  UserDashboardRoute: typeof UserDashboardRoute
+  UserSettingsRoute: typeof UserSettingsRoute
+  UserTasksRoute: typeof UserTasksRoute
+  UserUsersRoute: typeof UserUsersRoute
   BlogIndexRoute: typeof BlogIndexRoute
 }
 
@@ -734,6 +986,18 @@ const rootRouteChildren: RootRouteChildren = {
   errors404Route: errors404Route,
   errors500Route: errors500Route,
   errors503Route: errors503Route,
+  AdminAppsRoute: AdminAppsRoute,
+  AdminChatsRoute: AdminChatsRoute,
+  AdminDashboardRoute: AdminDashboardRoute,
+  AdminSettingsRoute: AdminSettingsRoute,
+  AdminTasksRoute: AdminTasksRoute,
+  AdminUsersRoute: AdminUsersRoute,
+  UserAppsRoute: UserAppsRoute,
+  UserChatsRoute: UserChatsRoute,
+  UserDashboardRoute: UserDashboardRoute,
+  UserSettingsRoute: UserSettingsRoute,
+  UserTasksRoute: UserTasksRoute,
+  UserUsersRoute: UserUsersRoute,
   BlogIndexRoute: BlogIndexRoute,
 }
 
@@ -764,6 +1028,18 @@ export const routeTree = rootRoute
         "/(errors)/404",
         "/(errors)/500",
         "/(errors)/503",
+        "/admin/apps",
+        "/admin/chats",
+        "/admin/dashboard",
+        "/admin/settings",
+        "/admin/tasks",
+        "/admin/users",
+        "/user/apps",
+        "/user/chats",
+        "/user/dashboard",
+        "/user/settings",
+        "/user/tasks",
+        "/user/users",
         "/blog/"
       ]
     },
@@ -841,6 +1117,42 @@ export const routeTree = rootRoute
     "/_authenticated/dashboard": {
       "filePath": "_authenticated/dashboard.tsx",
       "parent": "/_authenticated"
+    },
+    "/admin/apps": {
+      "filePath": "admin/apps.tsx"
+    },
+    "/admin/chats": {
+      "filePath": "admin/chats.tsx"
+    },
+    "/admin/dashboard": {
+      "filePath": "admin/dashboard.tsx"
+    },
+    "/admin/settings": {
+      "filePath": "admin/settings.tsx"
+    },
+    "/admin/tasks": {
+      "filePath": "admin/tasks.tsx"
+    },
+    "/admin/users": {
+      "filePath": "admin/users.tsx"
+    },
+    "/user/apps": {
+      "filePath": "user/apps.tsx"
+    },
+    "/user/chats": {
+      "filePath": "user/chats.tsx"
+    },
+    "/user/dashboard": {
+      "filePath": "user/dashboard.tsx"
+    },
+    "/user/settings": {
+      "filePath": "user/settings.tsx"
+    },
+    "/user/tasks": {
+      "filePath": "user/tasks.tsx"
+    },
+    "/user/users": {
+      "filePath": "user/users.tsx"
     },
     "/blog/": {
       "filePath": "blog/index.tsx"
