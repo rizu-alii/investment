@@ -16,7 +16,7 @@ export function HomeHero() {
         </p>
         <div className="mt-8 flex flex-col gap-4 sm:flex-row">
           <Button size="lg" asChild>
-            <a href="#">Get Started</a>
+            <Link to="/sign-in">Get Started</Link>
           </Button>
           <Button size="lg" variant="outline" asChild>
             <Link to="/calculator">Try Calculator</Link>

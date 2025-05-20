@@ -26,10 +26,10 @@ export function HomeHeader() {
         <div className="flex items-center gap-4">
           <div className="hidden md:flex items-center gap-4">
             <Button variant="ghost" asChild>
-              <Link to="/login">Login</Link>
+              <Link to="/sign-in">Login</Link>
             </Button>
             <Button asChild>
-              <Link to="/register">Sign Up</Link>
+              <Link to="/sign-up">Sign Up</Link>
             </Button>
           </div>
           <Sheet>
@@ -52,10 +52,10 @@ export function HomeHeader() {
                 </Link>
                 <div className="flex flex-col gap-2 pt-4">
                   <Button variant="ghost" asChild className="w-full justify-start">
-                    <Link to="/login">Login</Link>
+                    <Link to="/sign-in">Login</Link>
                   </Button>
                   <Button asChild className="w-full justify-start">
-                    <Link to="/register">Sign Up</Link>
+                    <Link to="/sign-up">Sign Up</Link>
                   </Button>
                 </div>
               </nav>

@@ -15,7 +15,7 @@ export function HomeInvest() {
           </p>
           <div className="mt-10 flex items-center justify-center gap-x-6">
             <Button size="lg" variant="secondary" asChild>
-              <a href="#">Get Started</a>
+              <Link to="/sign-in">Get Started</Link>
             </Button>
             <Button size="lg" variant="outline" className="bg-transparent text-primary-foreground hover:bg-primary-foreground/10" asChild>
               <Link to="/calculator">Try Calculator</Link>

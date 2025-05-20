@@ -15,9 +15,7 @@ export default function SignUp() {
     <AuthLayout>
       <Card className='gap-4'>
         <CardHeader>
-          <CardTitle className='text-lg tracking-tight'>
-            Create an account
-          </CardTitle>
+          <CardTitle className='text-lg tracking-tight'>Sign Up</CardTitle>
           <CardDescription>
             Enter your email and password to create an account. <br />
             Already have an account?{' '}
