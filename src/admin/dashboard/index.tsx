@@ -20,6 +20,30 @@ import { SidebarProvider } from '@/components/ui/sidebar'
 import { AppSidebar } from '@/components/layout/app-sidebar'
 import Cookies from 'js-cookie'
 import { adminSidebarData } from '@/components/layout/data/sidebar-data'
+import { IconUsers, IconChecklist, IconPackages, IconLayoutDashboard, IconBrowserCheck } from '@tabler/icons-react'
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts'
+import { Link } from '@tanstack/react-router'
+
+const demoStats = [
+  { title: 'Total Registered Users', value: '5,200', description: 'All users in the system', icon: IconUsers },
+  { title: 'Active Investments', value: '1,200', description: 'Currently active', icon: IconChecklist },
+  { title: 'Completed Investments', value: '980', description: 'Completed by users', icon: IconChecklist },
+  { title: 'Total Deposits', value: '$2,500,000', description: 'All-time deposits', icon: IconPackages },
+  { title: 'Total Withdrawals', value: '$1,200,000', description: 'All-time withdrawals', icon: IconPackages },
+  { title: 'Average Overall Return', value: '8.2%', description: 'Across all investments', icon: IconLayoutDashboard },
+  { title: 'Web Traffic', value: '32,000', description: 'Visits this month', icon: IconBrowserCheck },
+  { title: 'Visits by Date', value: '1,200 (today)', description: 'Today\'s visits', icon: IconBrowserCheck },
+];
+
+const graphData = [
+  { date: 'Mon', webTraffic: 4000, visits: 800 },
+  { date: 'Tue', webTraffic: 4200, visits: 900 },
+  { date: 'Wed', webTraffic: 3900, visits: 850 },
+  { date: 'Thu', webTraffic: 4500, visits: 1100 },
+  { date: 'Fri', webTraffic: 4700, visits: 1200 },
+  { date: 'Sat', webTraffic: 4300, visits: 950 },
+  { date: 'Sun', webTraffic: 4800, visits: 1300 },
+];
 
 export default function Dashboard() {
   const defaultOpen = Cookies.get('sidebar_state') !== 'false'
@@ -31,11 +55,11 @@ export default function Dashboard() {
         <div className="ml-auto w-full max-w-full peer-data-[state=collapsed]:w-[calc(100%-var(--sidebar-width-icon)-1rem)] peer-data-[state=expanded]:w-[calc(100%-var(--sidebar-width))] sm:transition-[width] sm:duration-200 sm:ease-linear flex h-svh flex-col group-data-[scroll-locked=1]/body:h-full has-[main.fixed-main]:group-data-[scroll-locked=1]/body:h-svh">
           {/* ===== Top Heading ===== */}
           <Header>
-            <TopNav links={topNav} />
-            <div className='ml-auto flex items-center space-x-4'>
-              <Search />
-              <ThemeSwitch />
-              <ProfileDropdown />
+            <div className='flex items-center w-full'>
+              {/* Sidebar icon is handled by AppSidebar, so nothing needed here */}
+              <div className='ml-auto flex items-center space-x-4'>
+                <ThemeSwitch />
+              </div>
             </div>
           </Header>
 
@@ -43,156 +67,54 @@ export default function Dashboard() {
           <Main>
             <div className='mb-2 flex items-center justify-between space-y-2'>
               <h1 className='text-2xl font-bold tracking-tight'>Admin Dashboard</h1>
-              <div className='flex items-center space-x-2'>
-                <Button>Download</Button>
+            </div>
+            {/* Quick Links Section */}
+            <div className='mb-6'>
+              <h2 className='text-lg font-semibold mb-3'>Quick Links</h2>
+              <div className='flex flex-wrap gap-3'>
+                <Link to='/admin/investments'><Button variant='outline'>New Investments</Button></Link>
+                <Link to='/admin/tasks'><Button variant='outline'>Pending Withdrawal Approvals</Button></Link>
+                <Link to='/admin/users/latest'><Button variant='outline'>Latest User Registrations</Button></Link>
               </div>
             </div>
-            <Tabs
-              orientation='vertical'
-              defaultValue='overview'
-              className='space-y-4'
-            >
-              <div className='w-full overflow-x-auto pb-2'>
-                <TabsList>
-                  <TabsTrigger value='overview'>Overview</TabsTrigger>
-                  <TabsTrigger value='analytics' disabled>
-                    Analytics
-                  </TabsTrigger>
-                  <TabsTrigger value='reports' disabled>
-                    Reports
-                  </TabsTrigger>
-                  <TabsTrigger value='notifications' disabled>
-                    Notifications
-                  </TabsTrigger>
-                </TabsList>
+            <div className='space-y-4'>
+              <div className='grid gap-4 sm:grid-cols-2 lg:grid-cols-4'>
+                {demoStats.map((stat, idx) => (
+                  <Card key={idx}>
+                    <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
+                      <CardTitle className='text-sm font-medium'>{stat.title}</CardTitle>
+                      {stat.icon && <stat.icon className='text-muted-foreground h-4 w-4' />}
+                    </CardHeader>
+                    <CardContent>
+                      <div className='text-2xl font-bold'>{stat.value}</div>
+                      <p className='text-muted-foreground text-xs'>{stat.description}</p>
+                    </CardContent>
+                  </Card>
+                ))}
               </div>
-              <TabsContent value='overview' className='space-y-4'>
-                <div className='grid gap-4 sm:grid-cols-2 lg:grid-cols-4'>
-                  <Card>
-                    <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
-                      <CardTitle className='text-sm font-medium'>
-                        Total Revenue
-                      </CardTitle>
-                      <svg
-                        xmlns='http://www.w3.org/2000/svg'
-                        viewBox='0 0 24 24'
-                        fill='none'
-                        stroke='currentColor'
-                        strokeLinecap='round'
-                        strokeLinejoin='round'
-                        strokeWidth='2'
-                        className='text-muted-foreground h-4 w-4'
-                      >
-                        <path d='M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6' />
-                      </svg>
-                    </CardHeader>
-                    <CardContent>
-                      <div className='text-2xl font-bold'>$45,231.89</div>
-                      <p className='text-muted-foreground text-xs'>
-                        +20.1% from last month
-                      </p>
-                    </CardContent>
-                  </Card>
-                  <Card>
-                    <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
-                      <CardTitle className='text-sm font-medium'>
-                        Subscriptions
-                      </CardTitle>
-                      <svg
-                        xmlns='http://www.w3.org/2000/svg'
-                        viewBox='0 0 24 24'
-                        fill='none'
-                        stroke='currentColor'
-                        strokeLinecap='round'
-                        strokeLinejoin='round'
-                        strokeWidth='2'
-                        className='text-muted-foreground h-4 w-4'
-                      >
-                        <path d='M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2' />
-                        <circle cx='9' cy='7' r='4' />
-                        <path d='M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75' />
-                      </svg>
-                    </CardHeader>
-                    <CardContent>
-                      <div className='text-2xl font-bold'>+2350</div>
-                      <p className='text-muted-foreground text-xs'>
-                        +180.1% from last month
-                      </p>
-                    </CardContent>
-                  </Card>
-                  <Card>
-                    <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
-                      <CardTitle className='text-sm font-medium'>Sales</CardTitle>
-                      <svg
-                        xmlns='http://www.w3.org/2000/svg'
-                        viewBox='0 0 24 24'
-                        fill='none'
-                        stroke='currentColor'
-                        strokeLinecap='round'
-                        strokeLinejoin='round'
-                        strokeWidth='2'
-                        className='text-muted-foreground h-4 w-4'
-                      >
-                        <rect width='20' height='14' x='2' y='5' rx='2' />
-                        <path d='M2 10h20' />
-                      </svg>
-                    </CardHeader>
-                    <CardContent>
-                      <div className='text-2xl font-bold'>+12,234</div>
-                      <p className='text-muted-foreground text-xs'>
-                        +19% from last month
-                      </p>
-                    </CardContent>
-                  </Card>
-                  <Card>
-                    <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
-                      <CardTitle className='text-sm font-medium'>
-                        Active Now
-                      </CardTitle>
-                      <svg
-                        xmlns='http://www.w3.org/2000/svg'
-                        viewBox='0 0 24 24'
-                        fill='none'
-                        stroke='currentColor'
-                        strokeLinecap='round'
-                        strokeLinejoin='round'
-                        strokeWidth='2'
-                        className='text-muted-foreground h-4 w-4'
-                      >
-                        <path d='M22 12h-4l-3 9L9 3l-3 9H2' />
-                      </svg>
-                    </CardHeader>
-                    <CardContent>
-                      <div className='text-2xl font-bold'>+573</div>
-                      <p className='text-muted-foreground text-xs'>
-                        +201 since last hour
-                      </p>
-                    </CardContent>
-                  </Card>
-                </div>
-                <div className='grid grid-cols-1 gap-4 lg:grid-cols-7'>
-                  <Card className='col-span-1 lg:col-span-4'>
-                    <CardHeader>
-                      <CardTitle>Overview</CardTitle>
-                    </CardHeader>
-                    <CardContent className='pl-2'>
-                      <Overview />
-                    </CardContent>
-                  </Card>
-                  <Card className='col-span-1 lg:col-span-3'>
-                    <CardHeader>
-                      <CardTitle>Recent Sales</CardTitle>
-                      <CardDescription>
-                        You made 265 sales this month.
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <RecentSales />
-                    </CardContent>
-                  </Card>
-                </div>
-              </TabsContent>
-            </Tabs>
+              <div className='grid grid-cols-1 gap-4'>
+                <Card>
+                  <CardHeader>
+                    <CardTitle>System Overview Graph</CardTitle>
+                  </CardHeader>
+                  <CardContent className='pl-2'>
+                    <div className='h-64 w-full'>
+                      <ResponsiveContainer width="100%" height="100%">
+                        <LineChart data={graphData} margin={{ top: 20, right: 30, left: 0, bottom: 0 }}>
+                          <CartesianGrid strokeDasharray="3 3" />
+                          <XAxis dataKey="date" />
+                          <YAxis />
+                          <Tooltip />
+                          <Legend />
+                          <Line type="monotone" dataKey="webTraffic" stroke="#8884d8" name="Web Traffic" />
+                          <Line type="monotone" dataKey="visits" stroke="#82ca9d" name="Visits by Date" />
+                        </LineChart>
+                      </ResponsiveContainer>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
           </Main>
         </div>
       </SidebarProvider>

@@ -6,18 +6,27 @@ import { ProfileDropdown } from '@/components/profile-dropdown'
 import { ThemeSwitch } from '@/components/theme-switch'
 import Cookies from 'js-cookie'
 import { adminSidebarData } from '@/components/layout/data/sidebar-data'
-import { useState } from 'react'
+import { createFileRoute } from '@tanstack/react-router'
 
-const demoInvestments = [
-  { id: 1, user: 'John Doe', fund: 'Prudential FMCG Fund', amount: 10000, date: '2024-05-20', status: 'New' },
-  { id: 2, user: 'Jane Smith', fund: 'Index Sensex Direct', amount: 5000, date: '2024-05-19', status: 'New' },
-  { id: 3, user: 'Alice Johnson', fund: 'Growth Equity Fund', amount: 8000, date: '2024-05-18', status: 'New' },
-]
+const demoHistory = {
+  1: [
+    { type: 'Investment', fund: 'Prudential FMCG Fund', amount: 10000, date: '2024-05-10' },
+    { type: 'Deposit', fund: '-', amount: 5000, date: '2024-05-12' },
+    { type: 'Withdrawal', fund: '-', amount: 2000, date: '2024-05-15' },
+  ],
+  2: [
+    { type: 'Investment', fund: 'Index Sensex Direct', amount: 5000, date: '2024-04-20' },
+    { type: 'Deposit', fund: '-', amount: 2000, date: '2024-04-22' },
+  ],
+  3: [
+    { type: 'Investment', fund: 'Growth Equity Fund', amount: 8000, date: '2024-03-25' },
+    { type: 'Withdrawal', fund: '-', amount: 1000, date: '2024-03-28' },
+  ],
+}
 
-export default function AdminChatsAsInvestments() {
+function UserHistory({ userId }: { userId: number }) {
   const defaultOpen = Cookies.get('sidebar_state') !== 'false'
-  const [investments] = useState(demoInvestments)
-
+  const history = demoHistory[userId] || []
   return (
     <SidebarProvider defaultOpen={defaultOpen}>
       <AppSidebar data={adminSidebarData} />
@@ -29,26 +38,24 @@ export default function AdminChatsAsInvestments() {
           </div>
         </Header>
         <Main>
-          <h2 className="text-2xl font-bold mb-6">New Investments</h2>
+          <h2 className="text-2xl font-bold mb-6">User History</h2>
           <div className="overflow-x-auto">
             <table className="min-w-full border text-sm">
               <thead>
                 <tr className="bg-muted">
-                  <th className="px-3 py-2 text-left font-semibold">User</th>
+                  <th className="px-3 py-2 text-left font-semibold">Type</th>
                   <th className="px-3 py-2 text-left font-semibold">Fund</th>
                   <th className="px-3 py-2 text-left font-semibold">Amount</th>
                   <th className="px-3 py-2 text-left font-semibold">Date</th>
-                  <th className="px-3 py-2 text-left font-semibold">Status</th>
                 </tr>
               </thead>
               <tbody>
-                {investments.map(inv => (
-                  <tr key={inv.id} className="border-t">
-                    <td className="px-3 py-2">{inv.user}</td>
-                    <td className="px-3 py-2">{inv.fund}</td>
-                    <td className="px-3 py-2">${inv.amount.toLocaleString()}</td>
-                    <td className="px-3 py-2">{inv.date}</td>
-                    <td className="px-3 py-2 text-blue-600">{inv.status}</td>
+                {history.map((item, idx) => (
+                  <tr key={idx} className="border-t">
+                    <td className="px-3 py-2">{item.type}</td>
+                    <td className="px-3 py-2">{item.fund}</td>
+                    <td className="px-3 py-2">${item.amount.toLocaleString()}</td>
+                    <td className="px-3 py-2">{item.date}</td>
                   </tr>
                 ))}
               </tbody>
@@ -58,4 +65,8 @@ export default function AdminChatsAsInvestments() {
       </div>
     </SidebarProvider>
   )
-} 
+}
+
+export const Route = createFileRoute('/admin/user-history')({
+  component: ({ params }) => <UserHistory userId={parseInt(params.userId)} />,
+}) 

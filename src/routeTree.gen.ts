@@ -26,8 +26,12 @@ import { Route as UserDashboardImport } from './routes/user/dashboard'
 import { Route as UserChatsImport } from './routes/user/chats'
 import { Route as UserAppsImport } from './routes/user/apps'
 import { Route as AdminUsersImport } from './routes/admin/users'
+import { Route as AdminUserProfileImport } from './routes/admin/user-profile'
+import { Route as AdminUserHistoryImport } from './routes/admin/user-history'
+import { Route as AdminTotalUsersImport } from './routes/admin/total-users'
 import { Route as AdminTasksImport } from './routes/admin/tasks'
 import { Route as AdminSettingsImport } from './routes/admin/settings'
+import { Route as AdminInvestmentsImport } from './routes/admin/investments'
 import { Route as AdminDashboardImport } from './routes/admin/dashboard'
 import { Route as AdminChatsImport } from './routes/admin/chats'
 import { Route as AdminAppsImport } from './routes/admin/apps'
@@ -145,6 +149,24 @@ const AdminUsersRoute = AdminUsersImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
+const AdminUserProfileRoute = AdminUserProfileImport.update({
+  id: '/admin/user-profile',
+  path: '/admin/user-profile',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const AdminUserHistoryRoute = AdminUserHistoryImport.update({
+  id: '/admin/user-history',
+  path: '/admin/user-history',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const AdminTotalUsersRoute = AdminTotalUsersImport.update({
+  id: '/admin/total-users',
+  path: '/admin/total-users',
+  getParentRoute: () => rootRoute,
+} as any)
+
 const AdminTasksRoute = AdminTasksImport.update({
   id: '/admin/tasks',
   path: '/admin/tasks',
@@ -154,6 +176,12 @@ const AdminTasksRoute = AdminTasksImport.update({
 const AdminSettingsRoute = AdminSettingsImport.update({
   id: '/admin/settings',
   path: '/admin/settings',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const AdminInvestmentsRoute = AdminInvestmentsImport.update({
+  id: '/admin/investments',
+  path: '/admin/investments',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -474,6 +502,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminDashboardImport
       parentRoute: typeof rootRoute
     }
+    '/admin/investments': {
+      id: '/admin/investments'
+      path: '/admin/investments'
+      fullPath: '/admin/investments'
+      preLoaderRoute: typeof AdminInvestmentsImport
+      parentRoute: typeof rootRoute
+    }
     '/admin/settings': {
       id: '/admin/settings'
       path: '/admin/settings'
@@ -486,6 +521,27 @@ declare module '@tanstack/react-router' {
       path: '/admin/tasks'
       fullPath: '/admin/tasks'
       preLoaderRoute: typeof AdminTasksImport
+      parentRoute: typeof rootRoute
+    }
+    '/admin/total-users': {
+      id: '/admin/total-users'
+      path: '/admin/total-users'
+      fullPath: '/admin/total-users'
+      preLoaderRoute: typeof AdminTotalUsersImport
+      parentRoute: typeof rootRoute
+    }
+    '/admin/user-history': {
+      id: '/admin/user-history'
+      path: '/admin/user-history'
+      fullPath: '/admin/user-history'
+      preLoaderRoute: typeof AdminUserHistoryImport
+      parentRoute: typeof rootRoute
+    }
+    '/admin/user-profile': {
+      id: '/admin/user-profile'
+      path: '/admin/user-profile'
+      fullPath: '/admin/user-profile'
+      preLoaderRoute: typeof AdminUserProfileImport
       parentRoute: typeof rootRoute
     }
     '/admin/users': {
@@ -688,8 +744,12 @@ export interface FileRoutesByFullPath {
   '/admin/apps': typeof AdminAppsRoute
   '/admin/chats': typeof AdminChatsRoute
   '/admin/dashboard': typeof AdminDashboardRoute
+  '/admin/investments': typeof AdminInvestmentsRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/tasks': typeof AdminTasksRoute
+  '/admin/total-users': typeof AdminTotalUsersRoute
+  '/admin/user-history': typeof AdminUserHistoryRoute
+  '/admin/user-profile': typeof AdminUserProfileRoute
   '/admin/users': typeof AdminUsersRoute
   '/user/apps': typeof UserAppsRoute
   '/user/chats': typeof UserChatsRoute
@@ -732,8 +792,12 @@ export interface FileRoutesByTo {
   '/admin/apps': typeof AdminAppsRoute
   '/admin/chats': typeof AdminChatsRoute
   '/admin/dashboard': typeof AdminDashboardRoute
+  '/admin/investments': typeof AdminInvestmentsRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/tasks': typeof AdminTasksRoute
+  '/admin/total-users': typeof AdminTotalUsersRoute
+  '/admin/user-history': typeof AdminUserHistoryRoute
+  '/admin/user-profile': typeof AdminUserProfileRoute
   '/admin/users': typeof AdminUsersRoute
   '/user/apps': typeof UserAppsRoute
   '/user/chats': typeof UserChatsRoute
@@ -778,8 +842,12 @@ export interface FileRoutesById {
   '/admin/apps': typeof AdminAppsRoute
   '/admin/chats': typeof AdminChatsRoute
   '/admin/dashboard': typeof AdminDashboardRoute
+  '/admin/investments': typeof AdminInvestmentsRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/tasks': typeof AdminTasksRoute
+  '/admin/total-users': typeof AdminTotalUsersRoute
+  '/admin/user-history': typeof AdminUserHistoryRoute
+  '/admin/user-profile': typeof AdminUserProfileRoute
   '/admin/users': typeof AdminUsersRoute
   '/user/apps': typeof UserAppsRoute
   '/user/chats': typeof UserChatsRoute
@@ -825,8 +893,12 @@ export interface FileRouteTypes {
     | '/admin/apps'
     | '/admin/chats'
     | '/admin/dashboard'
+    | '/admin/investments'
     | '/admin/settings'
     | '/admin/tasks'
+    | '/admin/total-users'
+    | '/admin/user-history'
+    | '/admin/user-profile'
     | '/admin/users'
     | '/user/apps'
     | '/user/chats'
@@ -868,8 +940,12 @@ export interface FileRouteTypes {
     | '/admin/apps'
     | '/admin/chats'
     | '/admin/dashboard'
+    | '/admin/investments'
     | '/admin/settings'
     | '/admin/tasks'
+    | '/admin/total-users'
+    | '/admin/user-history'
+    | '/admin/user-profile'
     | '/admin/users'
     | '/user/apps'
     | '/user/chats'
@@ -912,8 +988,12 @@ export interface FileRouteTypes {
     | '/admin/apps'
     | '/admin/chats'
     | '/admin/dashboard'
+    | '/admin/investments'
     | '/admin/settings'
     | '/admin/tasks'
+    | '/admin/total-users'
+    | '/admin/user-history'
+    | '/admin/user-profile'
     | '/admin/users'
     | '/user/apps'
     | '/user/chats'
@@ -956,8 +1036,12 @@ export interface RootRouteChildren {
   AdminAppsRoute: typeof AdminAppsRoute
   AdminChatsRoute: typeof AdminChatsRoute
   AdminDashboardRoute: typeof AdminDashboardRoute
+  AdminInvestmentsRoute: typeof AdminInvestmentsRoute
   AdminSettingsRoute: typeof AdminSettingsRoute
   AdminTasksRoute: typeof AdminTasksRoute
+  AdminTotalUsersRoute: typeof AdminTotalUsersRoute
+  AdminUserHistoryRoute: typeof AdminUserHistoryRoute
+  AdminUserProfileRoute: typeof AdminUserProfileRoute
   AdminUsersRoute: typeof AdminUsersRoute
   UserAppsRoute: typeof UserAppsRoute
   UserChatsRoute: typeof UserChatsRoute
@@ -989,8 +1073,12 @@ const rootRouteChildren: RootRouteChildren = {
   AdminAppsRoute: AdminAppsRoute,
   AdminChatsRoute: AdminChatsRoute,
   AdminDashboardRoute: AdminDashboardRoute,
+  AdminInvestmentsRoute: AdminInvestmentsRoute,
   AdminSettingsRoute: AdminSettingsRoute,
   AdminTasksRoute: AdminTasksRoute,
+  AdminTotalUsersRoute: AdminTotalUsersRoute,
+  AdminUserHistoryRoute: AdminUserHistoryRoute,
+  AdminUserProfileRoute: AdminUserProfileRoute,
   AdminUsersRoute: AdminUsersRoute,
   UserAppsRoute: UserAppsRoute,
   UserChatsRoute: UserChatsRoute,
@@ -1031,8 +1119,12 @@ export const routeTree = rootRoute
         "/admin/apps",
         "/admin/chats",
         "/admin/dashboard",
+        "/admin/investments",
         "/admin/settings",
         "/admin/tasks",
+        "/admin/total-users",
+        "/admin/user-history",
+        "/admin/user-profile",
         "/admin/users",
         "/user/apps",
         "/user/chats",
@@ -1127,11 +1219,23 @@ export const routeTree = rootRoute
     "/admin/dashboard": {
       "filePath": "admin/dashboard.tsx"
     },
+    "/admin/investments": {
+      "filePath": "admin/investments.tsx"
+    },
     "/admin/settings": {
       "filePath": "admin/settings.tsx"
     },
     "/admin/tasks": {
       "filePath": "admin/tasks.tsx"
+    },
+    "/admin/total-users": {
+      "filePath": "admin/total-users.tsx"
+    },
+    "/admin/user-history": {
+      "filePath": "admin/user-history.tsx"
+    },
+    "/admin/user-profile": {
+      "filePath": "admin/user-profile.tsx"
     },
     "/admin/users": {
       "filePath": "admin/users.tsx"

@@ -12,14 +12,14 @@ const blogPosts = [
     image: "/images/pexels-fauxels-3184416.jpg",
   },
   {
-    id: 2,
+    id: 2,  
     title: "The Power of Compound Interest",
     description: "Discover how compound interest can significantly impact your long-term investment returns.",
-    image: "/images/pexels-leeloothefirst-7887814.jpg",
+    image: "/images/pexels-leeloothefirst-7887814.jpg",             
   },
   {
     id: 3,
-    title: "Investment Strategies for Beginners",
+    title: "Investment Strategies for Beginners",                 
     description: "A comprehensive guide to getting started with investing, perfect for beginners.",
     image: "/images/Untitled (9).png",
   },

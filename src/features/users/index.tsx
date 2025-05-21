@@ -10,10 +10,13 @@ import { UsersTable } from './components/users-table'
 import UsersProvider from './context/users-context'
 import { userListSchema } from './data/schema'
 import { users } from './data/users'
+import { InvestmentsVisualization } from "./components/InvestmentsVisualization";
 
 export default function Users() {
   // Parse user list
   const userList = userListSchema.parse(users)
+  // Mock authentication
+  const isAuthenticated = true;
 
   return (
     <UsersProvider>
@@ -35,6 +38,17 @@ export default function Users() {
           </div>
           <UsersPrimaryButtons />
         </div>
+        {/* General Information Section */}
+        <div className="mb-6 p-4 bg-muted rounded-lg">
+          <h3 className="text-xl font-semibold mb-2">Investments Area</h3>
+          <p className="text-muted-foreground">Welcome to the Investments section. Here you can view and manage all your active investments. This area can be customized according to client guidelines.</p>
+        </div>
+        {/* Dynamic Investment Visualization (Authenticated users only) */}
+        {isAuthenticated && (
+          <div className="mb-8">
+            <InvestmentsVisualization />
+          </div>
+        )}
         <div className='-mx-4 flex-1 overflow-auto px-4 py-1 lg:flex-row lg:space-y-0 lg:space-x-12'>
           <UsersTable data={userList} columns={columns} />
         </div>

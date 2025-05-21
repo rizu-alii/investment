@@ -7,6 +7,7 @@ import { ThemeSwitch } from '@/components/theme-switch'
 import Cookies from 'js-cookie'
 import { adminSidebarData } from '@/components/layout/data/sidebar-data'
 import { useState } from 'react'
+import { createFileRoute } from '@tanstack/react-router'
 
 const demoInvestments = [
   { id: 1, user: 'John Doe', fund: 'Prudential FMCG Fund', amount: 10000, date: '2024-05-20', status: 'New' },
@@ -14,7 +15,7 @@ const demoInvestments = [
   { id: 3, user: 'Alice Johnson', fund: 'Growth Equity Fund', amount: 8000, date: '2024-05-18', status: 'New' },
 ]
 
-export default function AdminChatsAsInvestments() {
+function AdminInvestments() {
   const defaultOpen = Cookies.get('sidebar_state') !== 'false'
   const [investments] = useState(demoInvestments)
 
@@ -58,4 +59,8 @@ export default function AdminChatsAsInvestments() {
       </div>
     </SidebarProvider>
   )
-} 
+}
+
+export const Route = createFileRoute('/admin/investments')({
+  component: AdminInvestments,
+}) 
