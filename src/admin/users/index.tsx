@@ -8,10 +8,11 @@ import { Search } from '@/components/search'
 import { ThemeSwitch } from '@/components/theme-switch'
 import Cookies from 'js-cookie'
 import { adminSidebarData } from '@/components/layout/data/sidebar-data'
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
+import { Dialog } from '@/components/ui/dialog'
 
 const demoPackages = [
   {
@@ -50,6 +51,9 @@ export default function Users() {
     projectedReturn: '',
     risk: '',
   })
+  const [editDialogOpen, setEditDialogOpen] = useState(false)
+  const [editIndex, setEditIndex] = useState<number | null>(null)
+  const editFormRef = useRef<HTMLFormElement>(null)
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value })
@@ -86,6 +90,28 @@ export default function Users() {
       { ...form, id: Date.now() },
     ])
     setForm({ name: '', category: '', fundSize: '', projectedReturn: '', risk: '', description: '' })
+  }
+
+  const handleEditClick = (idx: number) => {
+    setEditIndex(idx)
+    setForm({ ...packages[idx] })
+    setEditDialogOpen(true)
+  }
+
+  const handleEditSave = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!validate()) return
+    if (editIndex !== null) {
+      const updated = [...packages]
+      updated[editIndex] = { ...form, id: updated[editIndex].id }
+      setPackages(updated)
+      setEditDialogOpen(false)
+      setEditIndex(null)
+    }
+  }
+
+  const handleDelete = (idx: number) => {
+    setPackages(packages.filter((_, i) => i !== idx))
   }
 
   return (
@@ -143,10 +169,11 @@ export default function Users() {
                         <th className="px-3 py-2 text-left font-semibold">Projected Return</th>
                         <th className="px-3 py-2 text-left font-semibold">Risk</th>
                         <th className="px-3 py-2 text-left font-semibold">Description</th>
+                        <th className="px-3 py-2 text-left font-semibold">Actions</th>
                       </tr>
                     </thead>
                     <tbody>
-                      {packages.map((pkg) => (
+                      {packages.map((pkg, idx) => (
                         <tr key={pkg.id} className="border-t">
                           <td className="px-3 py-2">{pkg.name}</td>
                           <td className="px-3 py-2">{pkg.category}</td>
@@ -154,11 +181,47 @@ export default function Users() {
                           <td className="px-3 py-2">{pkg.projectedReturn}</td>
                           <td className="px-3 py-2">{pkg.risk}</td>
                           <td className="px-3 py-2">{pkg.description}</td>
+                          <td className="px-3 py-2 space-x-2">
+                            <button className="text-blue-600 px-2 py-1 rounded hover:bg-blue-100" onClick={() => handleEditClick(idx)}>Edit</button>
+                            <button className="text-red-600 px-2 py-1 rounded hover:bg-red-100" onClick={() => handleDelete(idx)}>Delete</button>
+                          </td>
                         </tr>
                       ))}
                     </tbody>
                   </table>
                 </div>
+                <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
+                  {editDialogOpen && (
+                    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 z-50">
+                      <form ref={editFormRef} onSubmit={handleEditSave} className="bg-white p-6 rounded shadow-lg w-full max-w-lg space-y-4">
+                        <h3 className="text-lg font-semibold mb-2">Edit Investment Package</h3>
+                        <Input name="name" value={form.name} onChange={handleChange} placeholder="Package Name" required />
+                        <Input name="category" value={form.category} onChange={handleChange} placeholder="Category/Type" required />
+                        <div>
+                          <Input name="fundSize" value={form.fundSize} onChange={handleChange} placeholder="Fund Size (e.g. 100000 or 1.5cr)" required />
+                          {errors.fundSize && <div className="text-red-600 text-xs mt-1">{errors.fundSize}</div>}
+                        </div>
+                        <div>
+                          <Input name="projectedReturn" value={form.projectedReturn} onChange={handleChange} placeholder="Projected Return (e.g. +5.5%)" required />
+                          {errors.projectedReturn && <div className="text-red-600 text-xs mt-1">{errors.projectedReturn}</div>}
+                        </div>
+                        <div>
+                          <select name="risk" value={form.risk} onChange={handleChange} className="w-full border rounded px-3 py-2" required>
+                            <option value="">Select Risk Level</option>
+                            <option value="High">High</option>
+                            <option value="Low">Low</option>
+                          </select>
+                          {errors.risk && <div className="text-red-600 text-xs mt-1">{errors.risk}</div>}
+                        </div>
+                        <textarea name="description" value={form.description} onChange={handleChange} placeholder="Description" className="border rounded px-3 py-2 min-h-[40px]" required />
+                        <div className="flex justify-end gap-2">
+                          <Button type="button" variant="outline" onClick={() => setEditDialogOpen(false)}>Cancel</Button>
+                          <Button type="submit">Save</Button>
+                        </div>
+                      </form>
+                    </div>
+                  )}
+                </Dialog>
               </CardContent>
             </Card>
           </Main>

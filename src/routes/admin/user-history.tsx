@@ -6,9 +6,9 @@ import { ProfileDropdown } from '@/components/profile-dropdown'
 import { ThemeSwitch } from '@/components/theme-switch'
 import Cookies from 'js-cookie'
 import { adminSidebarData } from '@/components/layout/data/sidebar-data'
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, useSearch } from '@tanstack/react-router'
 
-const demoHistory = {
+const demoHistory: { [key: number]: { type: string; fund: string; amount: number; date: string }[] } = {
   1: [
     { type: 'Investment', fund: 'Prudential FMCG Fund', amount: 10000, date: '2024-05-10' },
     { type: 'Deposit', fund: '-', amount: 5000, date: '2024-05-12' },
@@ -24,8 +24,10 @@ const demoHistory = {
   ],
 }
 
-function UserHistory({ userId }: { userId: number }) {
+function UserHistory() {
   const defaultOpen = Cookies.get('sidebar_state') !== 'false'
+  const search = useSearch({ from: '/admin/user-history' })
+  const userId = parseInt(search.id)
   const history = demoHistory[userId] || []
   return (
     <SidebarProvider defaultOpen={defaultOpen}>
@@ -50,7 +52,7 @@ function UserHistory({ userId }: { userId: number }) {
                 </tr>
               </thead>
               <tbody>
-                {history.map((item, idx) => (
+                {history.map((item: any, idx: number) => (
                   <tr key={idx} className="border-t">
                     <td className="px-3 py-2">{item.type}</td>
                     <td className="px-3 py-2">{item.fund}</td>
@@ -68,5 +70,8 @@ function UserHistory({ userId }: { userId: number }) {
 }
 
 export const Route = createFileRoute('/admin/user-history')({
-  component: ({ params }) => <UserHistory userId={parseInt(params.userId)} />,
+  component: UserHistory,
+  validateSearch: (search) => ({
+    id: String(search.id ?? ''),
+  }),
 }) 

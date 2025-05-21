@@ -6,11 +6,12 @@ import {
   SidebarRail,
 } from '@/components/ui/sidebar'
 import { NavGroup } from '@/components/layout/nav-group'
-import { NavUser } from '@/components/layout/nav-user'
 import { TeamSwitcher } from '@/components/layout/team-switcher'
 import { sidebarData as defaultSidebarData } from './data/sidebar-data'
+import { useNavigate } from '@tanstack/react-router'
 
 export function AppSidebar({ data = defaultSidebarData, ...props }: { data?: typeof defaultSidebarData } & React.ComponentProps<typeof Sidebar>) {
+  const navigate = useNavigate();
   return (
     <Sidebar collapsible='icon' variant='floating' {...props}>
       <SidebarHeader>
@@ -22,7 +23,12 @@ export function AppSidebar({ data = defaultSidebarData, ...props }: { data?: typ
         ))}
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        <button
+          className="w-full py-2 px-4 bg-red-600 text-white rounded hover:bg-red-700 transition-colors font-semibold"
+          onClick={() => navigate({ to: '/sign-in' })}
+        >
+          Logout
+        </button>
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>

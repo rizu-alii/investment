@@ -25,6 +25,8 @@ import { ThemeSwitch } from '@/components/theme-switch'
 import { apps } from '@/features/apps/data/apps'
 import Cookies from 'js-cookie'
 import { adminSidebarData } from '@/components/layout/data/sidebar-data'
+import { Card, CardContent } from '@/components/ui/card'
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, BarChart, Bar, PieChart, Pie, Cell } from 'recharts'
 
 const appText = new Map<string, string>([
   ['all', 'All Apps'],
@@ -32,7 +34,39 @@ const appText = new Map<string, string>([
   ['notConnected', 'Not Connected'],
 ])
 
-export default function Apps() {
+const visitorsData = [
+  { date: '2024-05-15', unique: 120, returning: 40 },
+  { date: '2024-05-16', unique: 150, returning: 60 },
+  { date: '2024-05-17', unique: 180, returning: 80 },
+  { date: '2024-05-18', unique: 200, returning: 90 },
+  { date: '2024-05-19', unique: 170, returning: 70 },
+  { date: '2024-05-20', unique: 210, returning: 100 },
+]
+
+const devicesData = [
+  { name: 'Desktop', value: 400 },
+  { name: 'Mobile', value: 300 },
+  { name: 'Tablet', value: 100 },
+]
+const deviceColors = ['#8884d8', '#82ca9d', '#ffc658']
+
+const countriesData = [
+  { country: 'USA', visitors: 220 },
+  { country: 'India', visitors: 180 },
+  { country: 'UK', visitors: 90 },
+  { country: 'Germany', visitors: 60 },
+  { country: 'Canada', visitors: 50 },
+]
+
+const latestLogins = [
+  { user: 'John Doe', country: 'USA', device: 'Desktop', time: '2024-05-20 10:15' },
+  { user: 'Jane Smith', country: 'India', device: 'Mobile', time: '2024-05-20 09:50' },
+  { user: 'Alice Johnson', country: 'UK', device: 'Tablet', time: '2024-05-20 09:30' },
+  { user: 'Bob Lee', country: 'Germany', device: 'Desktop', time: '2024-05-20 08:45' },
+  { user: 'Maria Garcia', country: 'Canada', device: 'Mobile', time: '2024-05-20 08:20' },
+]
+
+export default function AdminAppsAnalytics() {
   const defaultOpen = Cookies.get('sidebar_state') !== 'false'
   const [sort, setSort] = useState('ascending')
   const [appType, setAppType] = useState('all')
@@ -59,94 +93,93 @@ export default function Apps() {
         <AppSidebar data={adminSidebarData} />
         <div className="ml-auto w-full max-w-full flex h-svh flex-col">
           {/* ===== Top Heading ===== */}
-          <Header>
-            <Search />
-            <div className='ml-auto flex items-center gap-4'>
+          <Header fixed>
+            <div className='ml-auto flex items-center space-x-4'>
               <ThemeSwitch />
               <ProfileDropdown />
             </div>
           </Header>
 
           {/* ===== Content ===== */}
-          <Main fixed>
-            <div>
-              <h1 className='text-2xl font-bold tracking-tight'>
-                App Integrations
-              </h1>
-              <p className='text-muted-foreground'>
-                Here&apos;s a list of your apps for the integration!
-              </p>
+          <Main>
+            <h2 className="text-2xl font-bold mb-6">Web Analytics</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+              <Card>
+                <CardContent className="p-6">
+                  <h3 className="font-semibold mb-2">Unique Visitors & Visit Frequency</h3>
+                  <ResponsiveContainer width="100%" height={250}>
+                    <LineChart data={visitorsData} margin={{ top: 20, right: 30, left: 0, bottom: 0 }}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="date" />
+                      <YAxis />
+                      <Tooltip />
+                      <Legend />
+                      <Line type="monotone" dataKey="unique" stroke="#8884d8" name="Unique Visitors" />
+                      <Line type="monotone" dataKey="returning" stroke="#82ca9d" name="Returning Visitors" />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="p-6">
+                  <h3 className="font-semibold mb-2">Devices</h3>
+                  <ResponsiveContainer width="100%" height={250}>
+                    <PieChart>
+                      <Pie data={devicesData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={80} label>
+                        {devicesData.map((entry, idx) => (
+                          <Cell key={`cell-${idx}`} fill={deviceColors[idx % deviceColors.length]} />
+                        ))}
+                      </Pie>
+                      <Tooltip />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </CardContent>
+              </Card>
             </div>
-            <div className='my-4 flex items-end justify-between sm:my-0 sm:items-center'>
-              <div className='flex flex-col gap-4 sm:my-4 sm:flex-row'>
-                <Input
-                  placeholder='Filter apps...'
-                  className='h-9 w-40 lg:w-[250px]'
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                />
-                <Select value={appType} onValueChange={setAppType}>
-                  <SelectTrigger className='w-36'>
-                    <SelectValue>{appText.get(appType)}</SelectValue>
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value='all'>All Apps</SelectItem>
-                    <SelectItem value='connected'>Connected</SelectItem>
-                    <SelectItem value='notConnected'>Not Connected</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <Select value={sort} onValueChange={setSort}>
-                <SelectTrigger className='w-16'>
-                  <SelectValue>
-                    <IconAdjustmentsHorizontal size={18} />
-                  </SelectValue>
-                </SelectTrigger>
-                <SelectContent align='end'>
-                  <SelectItem value='ascending'>
-                    <div className='flex items-center gap-4'>
-                      <IconSortAscendingLetters size={16} />
-                      <span>Ascending</span>
-                    </div>
-                  </SelectItem>
-                  <SelectItem value='descending'>
-                    <div className='flex items-center gap-4'>
-                      <IconSortDescendingLetters size={16} />
-                      <span>Descending</span>
-                    </div>
-                  </SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <Separator className='shadow-sm' />
-            <ul className='faded-bottom no-scrollbar grid gap-4 overflow-auto pt-4 pb-16 md:grid-cols-2 lg:grid-cols-3'>
-              {filteredApps.map((app) => (
-                <li
-                  key={app.name}
-                  className='rounded-lg border p-4 hover:shadow-md'
-                >
-                  <div className='mb-8 flex items-center justify-between'>
-                    <div
-                      className={`bg-muted flex size-10 items-center justify-center rounded-lg p-2`}
-                    >
-                      {app.logo}
-                    </div>
-                    <Button
-                      variant='outline'
-                      size='sm'
-                      className={`${app.connected ? 'border border-blue-300 bg-blue-50 hover:bg-blue-100 dark:border-blue-700 dark:bg-blue-950 dark:hover:bg-blue-900' : ''}`}
-                    >
-                      {app.connected ? 'Connected' : 'Connect'}
-                    </Button>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+              <Card>
+                <CardContent className="p-6">
+                  <h3 className="font-semibold mb-2">Countries of Origin</h3>
+                  <ResponsiveContainer width="100%" height={250}>
+                    <BarChart data={countriesData} margin={{ top: 20, right: 30, left: 0, bottom: 0 }}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="country" />
+                      <YAxis />
+                      <Tooltip />
+                      <Legend />
+                      <Bar dataKey="visitors" fill="#8884d8" name="Visitors" />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="p-6">
+                  <h3 className="font-semibold mb-2">Latest Logins</h3>
+                  <div className="overflow-x-auto">
+                    <table className="min-w-full border text-sm">
+                      <thead>
+                        <tr className="bg-muted">
+                          <th className="px-3 py-2 text-left font-semibold">User</th>
+                          <th className="px-3 py-2 text-left font-semibold">Country</th>
+                          <th className="px-3 py-2 text-left font-semibold">Device</th>
+                          <th className="px-3 py-2 text-left font-semibold">Time</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {latestLogins.map((login, idx) => (
+                          <tr key={idx} className="border-t">
+                            <td className="px-3 py-2">{login.user}</td>
+                            <td className="px-3 py-2">{login.country}</td>
+                            <td className="px-3 py-2">{login.device}</td>
+                            <td className="px-3 py-2">{login.time}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
                   </div>
-                  <div>
-                    <h2 className='mb-1 font-semibold'>{app.name}</h2>
-                    <p className='line-clamp-2 text-gray-500'>{app.desc}</p>
+                </CardContent>
+              </Card>
                   </div>
-                </li>
-              ))}
-            </ul>
           </Main>
         </div>
       </SidebarProvider>

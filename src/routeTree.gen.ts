@@ -28,6 +28,7 @@ import { Route as UserAppsImport } from './routes/user/apps'
 import { Route as AdminUsersImport } from './routes/admin/users'
 import { Route as AdminUserProfileImport } from './routes/admin/user-profile'
 import { Route as AdminUserHistoryImport } from './routes/admin/user-history'
+import { Route as AdminUserEditImport } from './routes/admin/user-edit'
 import { Route as AdminTotalUsersImport } from './routes/admin/total-users'
 import { Route as AdminTasksImport } from './routes/admin/tasks'
 import { Route as AdminSettingsImport } from './routes/admin/settings'
@@ -158,6 +159,12 @@ const AdminUserProfileRoute = AdminUserProfileImport.update({
 const AdminUserHistoryRoute = AdminUserHistoryImport.update({
   id: '/admin/user-history',
   path: '/admin/user-history',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const AdminUserEditRoute = AdminUserEditImport.update({
+  id: '/admin/user-edit',
+  path: '/admin/user-edit',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -530,6 +537,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminTotalUsersImport
       parentRoute: typeof rootRoute
     }
+    '/admin/user-edit': {
+      id: '/admin/user-edit'
+      path: '/admin/user-edit'
+      fullPath: '/admin/user-edit'
+      preLoaderRoute: typeof AdminUserEditImport
+      parentRoute: typeof rootRoute
+    }
     '/admin/user-history': {
       id: '/admin/user-history'
       path: '/admin/user-history'
@@ -748,6 +762,7 @@ export interface FileRoutesByFullPath {
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/tasks': typeof AdminTasksRoute
   '/admin/total-users': typeof AdminTotalUsersRoute
+  '/admin/user-edit': typeof AdminUserEditRoute
   '/admin/user-history': typeof AdminUserHistoryRoute
   '/admin/user-profile': typeof AdminUserProfileRoute
   '/admin/users': typeof AdminUsersRoute
@@ -796,6 +811,7 @@ export interface FileRoutesByTo {
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/tasks': typeof AdminTasksRoute
   '/admin/total-users': typeof AdminTotalUsersRoute
+  '/admin/user-edit': typeof AdminUserEditRoute
   '/admin/user-history': typeof AdminUserHistoryRoute
   '/admin/user-profile': typeof AdminUserProfileRoute
   '/admin/users': typeof AdminUsersRoute
@@ -846,6 +862,7 @@ export interface FileRoutesById {
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/tasks': typeof AdminTasksRoute
   '/admin/total-users': typeof AdminTotalUsersRoute
+  '/admin/user-edit': typeof AdminUserEditRoute
   '/admin/user-history': typeof AdminUserHistoryRoute
   '/admin/user-profile': typeof AdminUserProfileRoute
   '/admin/users': typeof AdminUsersRoute
@@ -897,6 +914,7 @@ export interface FileRouteTypes {
     | '/admin/settings'
     | '/admin/tasks'
     | '/admin/total-users'
+    | '/admin/user-edit'
     | '/admin/user-history'
     | '/admin/user-profile'
     | '/admin/users'
@@ -944,6 +962,7 @@ export interface FileRouteTypes {
     | '/admin/settings'
     | '/admin/tasks'
     | '/admin/total-users'
+    | '/admin/user-edit'
     | '/admin/user-history'
     | '/admin/user-profile'
     | '/admin/users'
@@ -992,6 +1011,7 @@ export interface FileRouteTypes {
     | '/admin/settings'
     | '/admin/tasks'
     | '/admin/total-users'
+    | '/admin/user-edit'
     | '/admin/user-history'
     | '/admin/user-profile'
     | '/admin/users'
@@ -1040,6 +1060,7 @@ export interface RootRouteChildren {
   AdminSettingsRoute: typeof AdminSettingsRoute
   AdminTasksRoute: typeof AdminTasksRoute
   AdminTotalUsersRoute: typeof AdminTotalUsersRoute
+  AdminUserEditRoute: typeof AdminUserEditRoute
   AdminUserHistoryRoute: typeof AdminUserHistoryRoute
   AdminUserProfileRoute: typeof AdminUserProfileRoute
   AdminUsersRoute: typeof AdminUsersRoute
@@ -1077,6 +1098,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminSettingsRoute: AdminSettingsRoute,
   AdminTasksRoute: AdminTasksRoute,
   AdminTotalUsersRoute: AdminTotalUsersRoute,
+  AdminUserEditRoute: AdminUserEditRoute,
   AdminUserHistoryRoute: AdminUserHistoryRoute,
   AdminUserProfileRoute: AdminUserProfileRoute,
   AdminUsersRoute: AdminUsersRoute,
@@ -1123,6 +1145,7 @@ export const routeTree = rootRoute
         "/admin/settings",
         "/admin/tasks",
         "/admin/total-users",
+        "/admin/user-edit",
         "/admin/user-history",
         "/admin/user-profile",
         "/admin/users",
@@ -1230,6 +1253,9 @@ export const routeTree = rootRoute
     },
     "/admin/total-users": {
       "filePath": "admin/total-users.tsx"
+    },
+    "/admin/user-edit": {
+      "filePath": "admin/user-edit.tsx"
     },
     "/admin/user-history": {
       "filePath": "admin/user-history.tsx"

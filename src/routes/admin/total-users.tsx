@@ -82,19 +82,19 @@ function TotalUsers() {
                     <td className="px-3 py-2 space-x-2">
                       <button
                         className="text-blue-600 px-2 py-1 rounded transition-colors hover:bg-blue-100"
-                        onClick={() => navigate({ to: `/admin/user-profile/${user.id}` })}
+                        onClick={() => navigate({ to: '/admin/user-profile', search: { id: user.id } })}
                       >
                         View Profile
                       </button>
                       <button
                         className="text-green-600 px-2 py-1 rounded transition-colors hover:bg-green-100"
-                        onClick={() => navigate({ to: `/admin/user-history/${user.id}` })}
+                        onClick={() => navigate({ to: '/admin/user-history', search: { id: user.id } })}
                       >
                         History
                       </button>
                       <button
                         className="text-yellow-600 px-2 py-1 rounded transition-colors hover:bg-yellow-100"
-                        onClick={() => alert('Edit user info')}
+                        onClick={() => navigate({ to: '/admin/user-edit', search: { id: String(user.id) } })}
                       >
                         Edit
                       </button>

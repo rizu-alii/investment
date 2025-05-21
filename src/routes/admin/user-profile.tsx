@@ -6,7 +6,7 @@ import { ProfileDropdown } from '@/components/profile-dropdown'
 import { ThemeSwitch } from '@/components/theme-switch'
 import Cookies from 'js-cookie'
 import { adminSidebarData } from '@/components/layout/data/sidebar-data'
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, useSearch } from '@tanstack/react-router'
 
 const demoUsers = [
   { id: 1, name: 'John Doe', email: 'john@example.com', regDate: '2024-05-01', investments: 3, suspended: false },
@@ -14,8 +14,10 @@ const demoUsers = [
   { id: 3, name: 'Alice Johnson', email: 'alice@example.com', regDate: '2024-03-20', investments: 2, suspended: true },
 ]
 
-function UserProfile({ userId }: { userId: number }) {
+function UserProfile() {
   const defaultOpen = Cookies.get('sidebar_state') !== 'false'
+  const search = useSearch({ from: '/admin/user-profile' })
+  const userId = parseInt(search.id)
   const user = demoUsers.find(u => u.id === userId)
   if (!user) return <div>User not found</div>
   return (
@@ -29,13 +31,15 @@ function UserProfile({ userId }: { userId: number }) {
           </div>
         </Header>
         <Main>
-          <h2 className="text-2xl font-bold mb-6">User Profile</h2>
-          <div className="max-w-lg border rounded p-6 bg-white">
-            <div className="mb-2"><span className="font-semibold">Name:</span> {user.name}</div>
-            <div className="mb-2"><span className="font-semibold">Email:</span> {user.email}</div>
-            <div className="mb-2"><span className="font-semibold">Registration Date:</span> {user.regDate}</div>
-            <div className="mb-2"><span className="font-semibold">Number of Investments:</span> {user.investments}</div>
-            <div className="mb-2"><span className="font-semibold">Status:</span> {user.suspended ? 'Suspended' : 'Active'}</div>
+          <h2 className="text-2xl font-bold mb-6 text-center">User Profile</h2>
+          <div className="flex items-center justify-center min-h-[60vh]">
+            <div className="max-w-lg w-full border rounded p-6 bg-white">
+              <div className="mb-2"><span className="font-semibold">Name:</span> {user.name}</div>
+              <div className="mb-2"><span className="font-semibold">Email:</span> {user.email}</div>
+              <div className="mb-2"><span className="font-semibold">Registration Date:</span> {user.regDate}</div>
+              <div className="mb-2"><span className="font-semibold">Number of Investments:</span> {user.investments}</div>
+              <div className="mb-2"><span className="font-semibold">Status:</span> {user.suspended ? 'Suspended' : 'Active'}</div>
+            </div>
           </div>
         </Main>
       </div>
@@ -44,5 +48,8 @@ function UserProfile({ userId }: { userId: number }) {
 }
 
 export const Route = createFileRoute('/admin/user-profile')({
-  component: ({ params }) => <UserProfile userId={parseInt(params.userId)} />,
+  component: UserProfile,
+  validateSearch: (search) => ({
+    id: String(search.id ?? ''),
+  }),
 }) 
