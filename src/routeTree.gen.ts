@@ -32,6 +32,7 @@ import { Route as AdminUserEditImport } from './routes/admin/user-edit'
 import { Route as AdminTotalUsersImport } from './routes/admin/total-users'
 import { Route as AdminTasksImport } from './routes/admin/tasks'
 import { Route as AdminSettingsImport } from './routes/admin/settings'
+import { Route as AdminLoginImport } from './routes/admin/login'
 import { Route as AdminInvestmentsImport } from './routes/admin/investments'
 import { Route as AdminDashboardImport } from './routes/admin/dashboard'
 import { Route as AdminChatsImport } from './routes/admin/chats'
@@ -183,6 +184,12 @@ const AdminTasksRoute = AdminTasksImport.update({
 const AdminSettingsRoute = AdminSettingsImport.update({
   id: '/admin/settings',
   path: '/admin/settings',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const AdminLoginRoute = AdminLoginImport.update({
+  id: '/admin/login',
+  path: '/admin/login',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -516,6 +523,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminInvestmentsImport
       parentRoute: typeof rootRoute
     }
+    '/admin/login': {
+      id: '/admin/login'
+      path: '/admin/login'
+      fullPath: '/admin/login'
+      preLoaderRoute: typeof AdminLoginImport
+      parentRoute: typeof rootRoute
+    }
     '/admin/settings': {
       id: '/admin/settings'
       path: '/admin/settings'
@@ -759,6 +773,7 @@ export interface FileRoutesByFullPath {
   '/admin/chats': typeof AdminChatsRoute
   '/admin/dashboard': typeof AdminDashboardRoute
   '/admin/investments': typeof AdminInvestmentsRoute
+  '/admin/login': typeof AdminLoginRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/tasks': typeof AdminTasksRoute
   '/admin/total-users': typeof AdminTotalUsersRoute
@@ -808,6 +823,7 @@ export interface FileRoutesByTo {
   '/admin/chats': typeof AdminChatsRoute
   '/admin/dashboard': typeof AdminDashboardRoute
   '/admin/investments': typeof AdminInvestmentsRoute
+  '/admin/login': typeof AdminLoginRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/tasks': typeof AdminTasksRoute
   '/admin/total-users': typeof AdminTotalUsersRoute
@@ -859,6 +875,7 @@ export interface FileRoutesById {
   '/admin/chats': typeof AdminChatsRoute
   '/admin/dashboard': typeof AdminDashboardRoute
   '/admin/investments': typeof AdminInvestmentsRoute
+  '/admin/login': typeof AdminLoginRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/tasks': typeof AdminTasksRoute
   '/admin/total-users': typeof AdminTotalUsersRoute
@@ -911,6 +928,7 @@ export interface FileRouteTypes {
     | '/admin/chats'
     | '/admin/dashboard'
     | '/admin/investments'
+    | '/admin/login'
     | '/admin/settings'
     | '/admin/tasks'
     | '/admin/total-users'
@@ -959,6 +977,7 @@ export interface FileRouteTypes {
     | '/admin/chats'
     | '/admin/dashboard'
     | '/admin/investments'
+    | '/admin/login'
     | '/admin/settings'
     | '/admin/tasks'
     | '/admin/total-users'
@@ -1008,6 +1027,7 @@ export interface FileRouteTypes {
     | '/admin/chats'
     | '/admin/dashboard'
     | '/admin/investments'
+    | '/admin/login'
     | '/admin/settings'
     | '/admin/tasks'
     | '/admin/total-users'
@@ -1057,6 +1077,7 @@ export interface RootRouteChildren {
   AdminChatsRoute: typeof AdminChatsRoute
   AdminDashboardRoute: typeof AdminDashboardRoute
   AdminInvestmentsRoute: typeof AdminInvestmentsRoute
+  AdminLoginRoute: typeof AdminLoginRoute
   AdminSettingsRoute: typeof AdminSettingsRoute
   AdminTasksRoute: typeof AdminTasksRoute
   AdminTotalUsersRoute: typeof AdminTotalUsersRoute
@@ -1095,6 +1116,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminChatsRoute: AdminChatsRoute,
   AdminDashboardRoute: AdminDashboardRoute,
   AdminInvestmentsRoute: AdminInvestmentsRoute,
+  AdminLoginRoute: AdminLoginRoute,
   AdminSettingsRoute: AdminSettingsRoute,
   AdminTasksRoute: AdminTasksRoute,
   AdminTotalUsersRoute: AdminTotalUsersRoute,
@@ -1142,6 +1164,7 @@ export const routeTree = rootRoute
         "/admin/chats",
         "/admin/dashboard",
         "/admin/investments",
+        "/admin/login",
         "/admin/settings",
         "/admin/tasks",
         "/admin/total-users",
@@ -1244,6 +1267,9 @@ export const routeTree = rootRoute
     },
     "/admin/investments": {
       "filePath": "admin/investments.tsx"
+    },
+    "/admin/login": {
+      "filePath": "admin/login.tsx"
     },
     "/admin/settings": {
       "filePath": "admin/settings.tsx"

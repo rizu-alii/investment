@@ -60,17 +60,6 @@ export const sidebarData: SidebarData = {
           icon: IconChecklist,
         },
         {
-          title: 'Apps',
-          url: '/user/apps',
-          icon: IconPackages,
-        },
-        {
-          title: 'Chats',
-          url: '/user/chats',
-          badge: '3',
-          icon: IconMessages,
-        },
-        {
           title: 'Investment Area',
           url: '/user/users',
           icon: IconUsers,
@@ -118,7 +107,7 @@ export const adminSidebarData: SidebarData = {
           icon: IconChecklist,
         },
         {
-          title: 'Apps',
+          title: 'Web Analytics',
           url: '/admin/apps',
           icon: IconPackages,
         },
