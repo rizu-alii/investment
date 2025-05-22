@@ -123,7 +123,7 @@ export const adminSidebarData: SidebarData = {
           icon: IconUserCog,
         },
         {
-          title: 'New Investment',
+          title: 'Create Investment',
           url: '/admin/users',
           icon: IconPackages,
         },

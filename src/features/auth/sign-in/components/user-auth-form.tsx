@@ -19,7 +19,7 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
     setIsLoading(true)
     setError(null)
     const formData = new FormData(e.currentTarget)
-    const username = formData.get(isAdminLogin ? 'username' : 'username') as string
+    const username = formData.get('username') as string
     const password = formData.get('password') as string
     try {
       if (isAdminLogin) {
@@ -30,10 +30,17 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
           body: JSON.stringify({ username, password }),
         })
         if (response.status === 200) {
-          window.location.href = '/admin/dashboard'
+          const data = await response.json();
+          if (data.jwtToken) {
+            const rawToken = data.jwtToken.startsWith('Bearer ') ? data.jwtToken.slice(7) : data.jwtToken;
+            localStorage.setItem('jwtToken', rawToken);
+            window.location.href = '/admin/dashboard';
+          } else {
+            setError('Login failed: No token received.');
+          }
         } else {
-          const msg = await response.text()
-          setError(msg || 'Invalid admin credentials.')
+          const data = await response.json().catch(() => ({}))
+          setError(data.message || 'Invalid admin credentials.')
         }
       } else {
         // User login: call backend
@@ -43,7 +50,14 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
           body: JSON.stringify({ username, password }),
         })
         if (response.status === 200) {
-          window.location.href = '/user/dashboard'
+          const data = await response.json();
+          if (data.jwtToken) {
+            const rawToken = data.jwtToken.startsWith('Bearer ') ? data.jwtToken.slice(7) : data.jwtToken;
+            localStorage.setItem('jwtToken', rawToken);
+            window.location.href = '/user/dashboard';
+          } else {
+            setError('Login failed: No token received.');
+          }
         } else {
           const data = await response.json().catch(() => ({}))
           setError(data.message || 'Login failed.')

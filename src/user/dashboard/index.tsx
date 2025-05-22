@@ -19,9 +19,20 @@ import { SearchProvider } from '@/context/search-context'
 import { SidebarProvider } from '@/components/ui/sidebar'
 import { AppSidebar } from '@/components/layout/app-sidebar'
 import Cookies from 'js-cookie'
+import { useEffect } from 'react'
+import { useNavigate } from '@tanstack/react-router'
 
 export default function Dashboard() {
+  const navigate = useNavigate();
   const defaultOpen = Cookies.get('sidebar_state') !== 'false'
+
+  useEffect(() => {
+    const token = localStorage.getItem('jwtToken');
+    if (!token) {
+      navigate({ to: '/sign-in' });
+    }
+    // In the future: validate token or call dashboard API with token
+  }, [navigate]);
 
   return (
     <SearchProvider>

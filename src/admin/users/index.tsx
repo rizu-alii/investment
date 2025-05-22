@@ -8,148 +8,300 @@ import { Search } from '@/components/search'
 import { ThemeSwitch } from '@/components/theme-switch'
 import Cookies from 'js-cookie'
 import { adminSidebarData } from '@/components/layout/data/sidebar-data'
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Dialog } from '@/components/ui/dialog'
-
-const demoPackages = [
-  {
-    id: 1,
-    name: 'Prudential FMCG Fund - Growth',
-    category: 'Equity | Consumption',
-    fundSize: '1,189.60cr',
-    projectedReturn: '+3.29%',
-    risk: 'High',
-    description: 'A leading FMCG fund with a strong track record.'
-  },
-  {
-    id: 2,
-    name: 'Index Sensex Direct Plan-Growth',
-    category: 'Equity | Consumption',
-    fundSize: '2,555.96cr',
-    projectedReturn: '+23.37%',
-    risk: 'High',
-    description: 'Direct exposure to Sensex index growth.'
-  },
-]
+import { toast } from 'sonner'
+import { Dialog as ConfirmDialog } from '@/components/ui/dialog'
 
 export default function Users() {
   const defaultOpen = Cookies.get('sidebar_state') !== 'false'
-  const [packages, setPackages] = useState(demoPackages)
+  const [packages, setPackages] = useState<any[]>([])
   const [form, setForm] = useState({
     name: '',
     category: '',
     fundSize: '',
     projectedReturn: '',
-    risk: '',
+    riskLevel: '',
     description: '',
   })
   const [errors, setErrors] = useState({
     fundSize: '',
     projectedReturn: '',
-    risk: '',
+    riskLevel: '',
   })
   const [editDialogOpen, setEditDialogOpen] = useState(false)
   const [editIndex, setEditIndex] = useState<number | null>(null)
   const editFormRef = useRef<HTMLFormElement>(null)
+  const [apiMessage, setApiMessage] = useState<string | null>(null)
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
+  const [deleteIndex, setDeleteIndex] = useState<number | null>(null)
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value })
-    setErrors({ ...errors, [e.target.name]: '' })
   }
 
   const validate = () => {
     let valid = true
-    const newErrors: typeof errors = { fundSize: '', projectedReturn: '', risk: '' }
-    // Fund size must be a number
-    if (!/^\d+(\.\d+)?(cr)?$/.test(form.fundSize.trim())) {
-      newErrors.fundSize = 'Fund size must be a number (optionally ending with cr)'
+    const newErrors: typeof errors = { fundSize: '', projectedReturn: '', riskLevel: '' }
+    // Only check that all fields are filled
+    if (!form.fundSize.trim()) {
+      newErrors.fundSize = 'Fund size is required'
       valid = false
     }
-    // Projected return must be a percentage
-    if (!/^\+?\d+(\.\d+)?%$/.test(form.projectedReturn.trim())) {
-      newErrors.projectedReturn = 'Projected return must be a percentage (e.g. +5.5%)'
+    if (!form.projectedReturn.trim()) {
+      newErrors.projectedReturn = 'Projected return is required'
       valid = false
     }
-    // Risk must be High or Low
-    if (form.risk !== 'High' && form.risk !== 'Low') {
-      newErrors.risk = 'Risk level must be High or Low'
+    if (!form.riskLevel.trim()) {
+      newErrors.riskLevel = 'Risk level is required'
       valid = false
     }
     setErrors(newErrors)
     return valid
   }
 
-  const handleCreate = (e: React.FormEvent) => {
+  const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!validate()) return
-    setPackages([
-      ...packages,
-      { ...form, id: Date.now() },
-    ])
-    setForm({ name: '', category: '', fundSize: '', projectedReturn: '', risk: '', description: '' })
+    const token = localStorage.getItem('jwtToken')
+    if (!token) {
+      window.location.href = '/admin/login'
+      return
+    }
+    setApiMessage(null)
+    try {
+      const response = await fetch('http://localhost:8080/api/admin/create-investment', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          name: form.name,
+          description: form.description,
+          projectedReturn: parseFloat(form.projectedReturn.replace('%', '')),
+          category: form.category,
+          riskLevel: form.riskLevel,
+          fundSize: form.fundSize,
+        }),
+      })
+      const data = await response.json()
+      if (response.ok) {
+        // Show success message from API or default message
+        const successMessage = data.message || 'Investment package created successfully!'
+        toast.success(successMessage)
+        setApiMessage(successMessage)
+        // Update local state
+        setPackages([
+          ...packages,
+          { ...form, id: Date.now() },
+        ])
+        // Reset form
+        setForm({ name: '', category: '', fundSize: '', projectedReturn: '', riskLevel: '', description: '' })
+      } else {
+        // Show error message from API or default message
+        const errorMessage = data.message || data.responseDescription || 'Failed to create package.'
+        toast.error(errorMessage)
+        setApiMessage(errorMessage)
+      }
+    } catch (err) {
+      const errorMessage = 'Network error. Please try again.'
+      toast.error(errorMessage)
+      setApiMessage(errorMessage)
+    }
   }
 
   const handleEditClick = (idx: number) => {
     setEditIndex(idx)
-    setForm({ ...packages[idx] })
-    setEditDialogOpen(true)
+    const pkg = packages[idx];
+    setForm({
+      name: pkg.name || '',
+      category: pkg.category || '',
+      fundSize: pkg.fundSize || '',
+      projectedReturn: pkg.projectedReturn || '',
+      riskLevel: pkg.riskLevel || '',
+      description: pkg.description || '',
+    });
+    setEditDialogOpen(true);
   }
 
-  const handleEditSave = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!validate()) return
-    if (editIndex !== null) {
-      const updated = [...packages]
-      updated[editIndex] = { ...form, id: updated[editIndex].id }
-      setPackages(updated)
-      setEditDialogOpen(false)
-      setEditIndex(null)
+  const handleEditSave = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (editIndex === null) return;
+    const token = localStorage.getItem('jwtToken');
+    if (!token) {
+      window.location.href = '/admin/login';
+      return;
+    }
+    setApiMessage(null);
+    try {
+      const investmentId = packages[editIndex].id;
+      const response = await fetch(`http://localhost:8080/api/admin/update-investment/${investmentId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          name: form.name,
+          category: form.category,
+          fundSize: form.fundSize,
+          projectedReturn: form.projectedReturn,
+          riskLevel: form.riskLevel,
+          description: form.description,
+        }),
+      });
+      const data = await response.json();
+      if (response.ok) {
+        const successMessage = data.message || 'Investment updated successfully.';
+        toast.success(successMessage);
+        setApiMessage(successMessage);
+        // Option 1: Refetch the list (recommended for consistency)
+        await fetchInvestments();
+        // Option 2: Update the item in state directly (uncomment if you prefer this)
+        // const updated = [...packages];
+        // updated[editIndex] = { ...form, id: investmentId };
+        // setPackages(updated);
+        setEditDialogOpen(false);
+        setEditIndex(null);
+      } else {
+        const errorMessage = data.message || 'Failed to update investment.';
+        toast.error(errorMessage);
+        setApiMessage(errorMessage);
+        // Keep dialog open for further editing
+      }
+    } catch (err) {
+      const errorMessage = 'Network error. Please try again.';
+      toast.error(errorMessage);
+      setApiMessage(errorMessage);
+    }
+  };
+
+  const handleDeleteClick = (idx: number) => {
+    setDeleteIndex(idx)
+    setDeleteDialogOpen(true)
+  }
+
+  const handleDeleteConfirm = async () => {
+    if (deleteIndex === null) return
+    const token = localStorage.getItem('jwtToken')
+    if (!token) {
+      window.location.href = '/admin/login'
+      return
+    }
+    setApiMessage(null)
+    try {
+      const investmentId = packages[deleteIndex].id
+      const response = await fetch(`http://localhost:8080/api/admin/delete-investment/${investmentId}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      })
+      if (response.status === 401) {
+        window.location.href = '/admin/login'
+        return
+      }
+      const data = await response.json()
+      if (response.ok) {
+        const successMessage = data.message || 'Investment deleted successfully.'
+        toast.success(successMessage)
+        setApiMessage(successMessage)
+        await fetchInvestments()
+      } else {
+        const errorMessage = data.message || 'Failed to delete investment.'
+        toast.error(errorMessage)
+        setApiMessage(errorMessage)
+      }
+    } catch (err) {
+      const errorMessage = 'Network error. Please try again.'
+      toast.error(errorMessage)
+      setApiMessage(errorMessage)
+    } finally {
+      setDeleteDialogOpen(false)
+      setDeleteIndex(null)
     }
   }
 
-  const handleDelete = (idx: number) => {
-    setPackages(packages.filter((_, i) => i !== idx))
+  const fetchInvestments = async () => {
+    const token = localStorage.getItem('jwtToken')
+    if (!token) {
+      window.location.href = '/admin/login'
+      return
+    }
+    setApiMessage(null)
+    try {
+      const response = await fetch('http://localhost:8080/api/admin/get-investments', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+      })
+      if (response.status === 401) {
+        window.location.href = '/admin/login'
+        return
+      }
+      const data = await response.json()
+      if (response.ok && data.data) {
+        setPackages(data.data)
+      } else {
+        const errorMessage = data.message || 'Failed to fetch investments.'
+        setApiMessage(errorMessage)
+      }
+    } catch (err) {
+      setApiMessage('Network error. Please try again.')
+    }
   }
+
+  useEffect(() => {
+    fetchInvestments()
+  }, [])
 
   return (
     <SearchProvider>
       <SidebarProvider defaultOpen={defaultOpen}>
         <AppSidebar data={adminSidebarData} />
-        <div className="ml-auto w-full max-w-full flex h-svh flex-col">
-          <Header fixed>
-            <Search />
-            <div className='ml-auto flex items-center space-x-4'>
-              <ThemeSwitch />
-              <ProfileDropdown />
-            </div>
-          </Header>
-          <Main>
+          <div className="ml-auto w-full max-w-full flex h-svh flex-col">
+            <Header fixed>
+              <Search />
+              <div className='ml-auto flex items-center space-x-4'>
+                <ThemeSwitch />
+                <ProfileDropdown />
+              </div>
+            </Header>
+            <Main>
+            {apiMessage && (
+              <div className={`mb-4 p-3 rounded mx-auto max-w-2xl text-center ${
+                apiMessage.includes('successfully') ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'
+              }`}>
+                {apiMessage}
+              </div>
+            )}
             <Card className="mb-6">
               <CardContent className="p-6">
                 <h2 className="text-xl font-semibold mb-4">Create New Investment Package</h2>
                 <form className="grid grid-cols-1 md:grid-cols-2 gap-4" onSubmit={handleCreate}>
-                  <Input name="name" value={form.name} onChange={handleChange} placeholder="Package Name" required />
-                  <Input name="category" value={form.category} onChange={handleChange} placeholder="Category/Type" required />
+                  <Input name="name" value={form.name} onChange={handleChange} placeholder="Name" />
+                  <Input name="category" value={form.category} onChange={handleChange} placeholder="Category" />
                   <div>
-                    <Input name="fundSize" value={form.fundSize} onChange={handleChange} placeholder="Fund Size (e.g. 100000 or 1.5cr)" required />
-                    {errors.fundSize && <div className="text-red-600 text-xs mt-1">{errors.fundSize}</div>}
+                    <Input name="fundSize" value={form.fundSize} onChange={handleChange} placeholder="Fund Size" />
                   </div>
                   <div>
-                    <Input name="projectedReturn" value={form.projectedReturn} onChange={handleChange} placeholder="Projected Return (e.g. +5.5%)" required />
-                    {errors.projectedReturn && <div className="text-red-600 text-xs mt-1">{errors.projectedReturn}</div>}
+                    <Input name="projectedReturn" value={form.projectedReturn} onChange={handleChange} placeholder="Projected Return" />
                   </div>
-                  <div>
-                    <select name="risk" value={form.risk} onChange={handleChange} className="w-full border rounded px-3 py-2" required>
-                      <option value="">Select Risk Level</option>
+                <div>
+                    <select name="riskLevel" value={form.riskLevel} onChange={handleChange} className="w-full border rounded px-3 py-2">
+                      <option value="">Risk Level</option>
                       <option value="High">High</option>
+                      <option value="Medium">Medium</option>
                       <option value="Low">Low</option>
                     </select>
-                    {errors.risk && <div className="text-red-600 text-xs mt-1">{errors.risk}</div>}
                   </div>
-                  <textarea name="description" value={form.description} onChange={handleChange} placeholder="Description" className="col-span-1 md:col-span-2 border rounded px-3 py-2 min-h-[40px]" required />
+                  <textarea name="description" value={form.description} onChange={handleChange} placeholder="Description" className="col-span-1 md:col-span-2 border rounded px-3 py-2 min-h-[40px]" />
                   <div className="col-span-1 md:col-span-2 flex justify-end">
                     <Button type="submit">Create Package</Button>
                   </div>
@@ -178,12 +330,12 @@ export default function Users() {
                           <td className="px-3 py-2">{pkg.name}</td>
                           <td className="px-3 py-2">{pkg.category}</td>
                           <td className="px-3 py-2">{pkg.fundSize}</td>
-                          <td className="px-3 py-2">{pkg.projectedReturn}</td>
-                          <td className="px-3 py-2">{pkg.risk}</td>
+                          <td className="px-3 py-2">{typeof pkg.projectedReturn === 'number' ? `+${pkg.projectedReturn}%` : pkg.projectedReturn}</td>
+                          <td className="px-3 py-2">{pkg.riskLevel || pkg.risk}</td>
                           <td className="px-3 py-2">{pkg.description}</td>
                           <td className="px-3 py-2 space-x-2">
                             <button className="text-blue-600 px-2 py-1 rounded hover:bg-blue-100" onClick={() => handleEditClick(idx)}>Edit</button>
-                            <button className="text-red-600 px-2 py-1 rounded hover:bg-red-100" onClick={() => handleDelete(idx)}>Delete</button>
+                            <button className="text-red-600 px-2 py-1 rounded hover:bg-red-100" onClick={() => handleDeleteClick(idx)}>Delete</button>
                           </td>
                         </tr>
                       ))}
@@ -195,25 +347,23 @@ export default function Users() {
                     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 z-50">
                       <form ref={editFormRef} onSubmit={handleEditSave} className="bg-white p-6 rounded shadow-lg w-full max-w-lg space-y-4">
                         <h3 className="text-lg font-semibold mb-2">Edit Investment Package</h3>
-                        <Input name="name" value={form.name} onChange={handleChange} placeholder="Package Name" required />
-                        <Input name="category" value={form.category} onChange={handleChange} placeholder="Category/Type" required />
+                        <Input name="name" value={form.name} onChange={handleChange} placeholder="Name" />
+                        <Input name="category" value={form.category} onChange={handleChange} placeholder="Category" />
                         <div>
-                          <Input name="fundSize" value={form.fundSize} onChange={handleChange} placeholder="Fund Size (e.g. 100000 or 1.5cr)" required />
-                          {errors.fundSize && <div className="text-red-600 text-xs mt-1">{errors.fundSize}</div>}
+                          <Input name="fundSize" value={form.fundSize} onChange={handleChange} placeholder="Fund Size" />
                         </div>
                         <div>
-                          <Input name="projectedReturn" value={form.projectedReturn} onChange={handleChange} placeholder="Projected Return (e.g. +5.5%)" required />
-                          {errors.projectedReturn && <div className="text-red-600 text-xs mt-1">{errors.projectedReturn}</div>}
+                          <Input name="projectedReturn" value={form.projectedReturn} onChange={handleChange} placeholder="Projected Return" />
                         </div>
                         <div>
-                          <select name="risk" value={form.risk} onChange={handleChange} className="w-full border rounded px-3 py-2" required>
-                            <option value="">Select Risk Level</option>
+                          <select name="riskLevel" value={form.riskLevel} onChange={handleChange} className="w-full border rounded px-3 py-2">
+                            <option value="">Risk Level</option>
                             <option value="High">High</option>
+                            <option value="Medium">Medium</option>
                             <option value="Low">Low</option>
                           </select>
-                          {errors.risk && <div className="text-red-600 text-xs mt-1">{errors.risk}</div>}
                         </div>
-                        <textarea name="description" value={form.description} onChange={handleChange} placeholder="Description" className="border rounded px-3 py-2 min-h-[40px]" required />
+                        <textarea name="description" value={form.description} onChange={handleChange} placeholder="Description" className="border rounded px-3 py-2 min-h-[80px] w-full" rows={5} />
                         <div className="flex justify-end gap-2">
                           <Button type="button" variant="outline" onClick={() => setEditDialogOpen(false)}>Cancel</Button>
                           <Button type="submit">Save</Button>
@@ -222,10 +372,24 @@ export default function Users() {
                     </div>
                   )}
                 </Dialog>
+                <ConfirmDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+                  {deleteDialogOpen && (
+                    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 z-50">
+                      <div className="bg-white p-6 rounded shadow-lg w-full max-w-sm space-y-4">
+                        <h3 className="text-lg font-semibold mb-2">Confirm Deletion</h3>
+                        <p>Are you sure you want to delete this investment?</p>
+                        <div className="flex justify-end gap-2">
+                          <Button type="button" variant="outline" onClick={() => setDeleteDialogOpen(false)}>Cancel</Button>
+                          <Button type="button" variant="destructive" onClick={handleDeleteConfirm}>Delete</Button>
+                        </div>
+              </div>
+              </div>
+                  )}
+                </ConfirmDialog>
               </CardContent>
             </Card>
-          </Main>
-        </div>
+            </Main>
+          </div>
       </SidebarProvider>
     </SearchProvider>
   )

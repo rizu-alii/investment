@@ -17,7 +17,8 @@ function AdminLogin() {
           <CardTitle className='text-lg tracking-tight'>Admin Login</CardTitle>
           <CardDescription>
             Enter your admin email and password below to <br />
-            log into the admin dashboard
+          
+            log into the admin dashboard                   
           </CardDescription>
         </CardHeader>
         <CardContent>

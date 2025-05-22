@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
@@ -10,74 +10,52 @@ import {
   DialogDescription,
   DialogClose,
 } from "@/components/ui/dialog";
-
-const demoInvestments = [
-  {
-    id: 1,
-    category: "Equity | Consumption",
-    name: "Prudential FMCG Fund - Growth",
-    fundSize: "1,189.60cr",
-    return: "+3.29%",
-    risk: "High",
-    status: "Active",
-    returnColor: "text-green-600",
-    type: "Equity",
-  },
-  {
-    id: 2,
-    category: "Equity | Consumption",
-    name: "Index Sensex Direct Plan-Growth",
-    fundSize: "2,555.96cr",
-    return: "+23.37%",
-    risk: "High",
-    status: "Active",
-    returnColor: "text-green-600",
-    type: "Equity",
-  },
-  {
-    id: 3,
-    category: "Equity | Consumption",
-    name: "Index Sensex Direct",
-    fundSize: "94.29cr",
-    return: "+18.70%",
-    risk: "Very High",
-    status: "Inactive",
-    returnColor: "text-green-600",
-    type: "Equity",
-  },
-  {
-    id: 4,
-    category: "Debt | Consumption",
-    name: "Market Fund Direct-Growth",
-    fundSize: "1,400.00cr",
-    return: "+7.10%",
-    risk: "Low",
-    status: "Active",
-    returnColor: "text-green-600",
-    type: "Debt",
-  },
-  {
-    id: 5,
-    category: "Debt | Consumption",
-    name: "Liquid Fund Direct-Growth",
-    fundSize: "2,000.00cr",
-    return: "+5.50%",
-    risk: "Moderate",
-    status: "Inactive",
-    returnColor: "text-green-600",
-    type: "Debt",
-  },
-];
-
-type Investment = typeof demoInvestments[number];
+import { toast } from 'sonner';
 
 export function InvestmentsVisualization() {
+  const [investments, setInvestments] = useState<any[]>([]);
+  const [apiMessage, setApiMessage] = useState<string | null>(null);
   const [open, setOpen] = useState(false);
-  const [selectedInvestment, setSelectedInvestment] = useState<Investment | null>(null);
+  const [selectedInvestment, setSelectedInvestment] = useState<any | null>(null);
   const [amount, setAmount] = useState("");
   const [months, setMonths] = useState("");
 
-  const handleInvestClick = (investment: Investment) => {
+  useEffect(() => {
+    const fetchInvestments = async () => {
+      const token = localStorage.getItem('jwtToken');
+      if (!token) {
+        window.location.href = '/sign-in';
+        return;
+      }
+      setApiMessage(null);
+      try {
+        const response = await fetch('http://localhost:8080/api/admin/get-investments', {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+        });
+        if (response.status === 401) {
+          window.location.href = '/sign-in';
+          return;
+        }
+        const data = await response.json();
+        if (response.ok && Array.isArray(data.data)) {
+          setInvestments(data.data);
+        } else {
+          const errorMessage = data.message || 'Failed to fetch investments.';
+          setApiMessage(errorMessage);
+          toast.error(errorMessage);
+        }
+      } catch (err) {
+        setApiMessage('Network error. Please try again.');
+        toast.error('Network error. Please try again.');
+      }
+    };
+    fetchInvestments();
+  }, []);
+
+  const handleInvestClick = (investment: any) => {
     setSelectedInvestment(investment);
     setOpen(true);
   };
@@ -96,7 +74,12 @@ export function InvestmentsVisualization() {
 
   return (
     <div className="space-y-4">
-      {demoInvestments.map((inv) => (
+      {apiMessage && (
+        <div className="mb-4 p-3 rounded mx-auto max-w-2xl text-center bg-red-50 text-red-700">
+          {apiMessage}
+        </div>
+      )}
+      {investments.map((inv) => (
         <Card key={inv.id} className="flex flex-col md:flex-row items-center justify-between p-4">
           <CardContent className="flex-1 flex flex-col md:flex-row md:items-center md:space-x-8 p-0">
             <div className="flex-1">
@@ -104,9 +87,8 @@ export function InvestmentsVisualization() {
               <div className="font-semibold text-lg mb-1">{inv.name}</div>
               <div className="flex space-x-6 text-sm text-muted-foreground">
                 <span>Fund Size <span className="font-medium text-black dark:text-white">{inv.fundSize}</span></span>
-                <span>Return(P.A.) <span className={`font-medium ${inv.returnColor}`}>{inv.return}</span></span>
-                <span>Risk <span className="font-medium text-black dark:text-white">{inv.risk}</span></span>
-                <span>Status <span className={`font-medium ${inv.status === 'Active' ? 'text-green-600' : 'text-red-600'}`}>{inv.status}</span></span>
+                <span>Return(P.A.) <span className="font-medium text-green-600">{typeof inv.projectedReturn === 'number' ? `+${inv.projectedReturn}%` : inv.projectedReturn}</span></span>
+                <span>Risk <span className="font-medium text-black dark:text-white">{inv.riskLevel || inv.risk}</span></span>
               </div>
             </div>
             <div className="flex flex-col md:flex-row md:items-center md:space-x-4 mt-4 md:mt-0">
