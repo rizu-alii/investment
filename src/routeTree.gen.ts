@@ -22,9 +22,11 @@ import { Route as BlogIndexImport } from './routes/blog/index'
 import { Route as UserUsersImport } from './routes/user/users'
 import { Route as UserTasksImport } from './routes/user/tasks'
 import { Route as UserSettingsImport } from './routes/user/settings'
+import { Route as UserInvestmentAreaImport } from './routes/user/investment-area'
 import { Route as UserDashboardImport } from './routes/user/dashboard'
 import { Route as UserChatsImport } from './routes/user/chats'
 import { Route as UserAppsImport } from './routes/user/apps'
+import { Route as UserActiveInvestmentsImport } from './routes/user/active-investments'
 import { Route as AdminUsersImport } from './routes/admin/users'
 import { Route as AdminUserProfileImport } from './routes/admin/user-profile'
 import { Route as AdminUserHistoryImport } from './routes/admin/user-history'
@@ -127,6 +129,12 @@ const UserSettingsRoute = UserSettingsImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
+const UserInvestmentAreaRoute = UserInvestmentAreaImport.update({
+  id: '/user/investment-area',
+  path: '/user/investment-area',
+  getParentRoute: () => rootRoute,
+} as any)
+
 const UserDashboardRoute = UserDashboardImport.update({
   id: '/user/dashboard',
   path: '/user/dashboard',
@@ -142,6 +150,12 @@ const UserChatsRoute = UserChatsImport.update({
 const UserAppsRoute = UserAppsImport.update({
   id: '/user/apps',
   path: '/user/apps',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const UserActiveInvestmentsRoute = UserActiveInvestmentsImport.update({
+  id: '/user/active-investments',
+  path: '/user/active-investments',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -579,6 +593,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminUsersImport
       parentRoute: typeof rootRoute
     }
+    '/user/active-investments': {
+      id: '/user/active-investments'
+      path: '/user/active-investments'
+      fullPath: '/user/active-investments'
+      preLoaderRoute: typeof UserActiveInvestmentsImport
+      parentRoute: typeof rootRoute
+    }
     '/user/apps': {
       id: '/user/apps'
       path: '/user/apps'
@@ -598,6 +619,13 @@ declare module '@tanstack/react-router' {
       path: '/user/dashboard'
       fullPath: '/user/dashboard'
       preLoaderRoute: typeof UserDashboardImport
+      parentRoute: typeof rootRoute
+    }
+    '/user/investment-area': {
+      id: '/user/investment-area'
+      path: '/user/investment-area'
+      fullPath: '/user/investment-area'
+      preLoaderRoute: typeof UserInvestmentAreaImport
       parentRoute: typeof rootRoute
     }
     '/user/settings': {
@@ -781,9 +809,11 @@ export interface FileRoutesByFullPath {
   '/admin/user-history': typeof AdminUserHistoryRoute
   '/admin/user-profile': typeof AdminUserProfileRoute
   '/admin/users': typeof AdminUsersRoute
+  '/user/active-investments': typeof UserActiveInvestmentsRoute
   '/user/apps': typeof UserAppsRoute
   '/user/chats': typeof UserChatsRoute
   '/user/dashboard': typeof UserDashboardRoute
+  '/user/investment-area': typeof UserInvestmentAreaRoute
   '/user/settings': typeof UserSettingsRoute
   '/user/tasks': typeof UserTasksRoute
   '/user/users': typeof UserUsersRoute
@@ -831,9 +861,11 @@ export interface FileRoutesByTo {
   '/admin/user-history': typeof AdminUserHistoryRoute
   '/admin/user-profile': typeof AdminUserProfileRoute
   '/admin/users': typeof AdminUsersRoute
+  '/user/active-investments': typeof UserActiveInvestmentsRoute
   '/user/apps': typeof UserAppsRoute
   '/user/chats': typeof UserChatsRoute
   '/user/dashboard': typeof UserDashboardRoute
+  '/user/investment-area': typeof UserInvestmentAreaRoute
   '/user/settings': typeof UserSettingsRoute
   '/user/tasks': typeof UserTasksRoute
   '/user/users': typeof UserUsersRoute
@@ -883,9 +915,11 @@ export interface FileRoutesById {
   '/admin/user-history': typeof AdminUserHistoryRoute
   '/admin/user-profile': typeof AdminUserProfileRoute
   '/admin/users': typeof AdminUsersRoute
+  '/user/active-investments': typeof UserActiveInvestmentsRoute
   '/user/apps': typeof UserAppsRoute
   '/user/chats': typeof UserChatsRoute
   '/user/dashboard': typeof UserDashboardRoute
+  '/user/investment-area': typeof UserInvestmentAreaRoute
   '/user/settings': typeof UserSettingsRoute
   '/user/tasks': typeof UserTasksRoute
   '/user/users': typeof UserUsersRoute
@@ -936,9 +970,11 @@ export interface FileRouteTypes {
     | '/admin/user-history'
     | '/admin/user-profile'
     | '/admin/users'
+    | '/user/active-investments'
     | '/user/apps'
     | '/user/chats'
     | '/user/dashboard'
+    | '/user/investment-area'
     | '/user/settings'
     | '/user/tasks'
     | '/user/users'
@@ -985,9 +1021,11 @@ export interface FileRouteTypes {
     | '/admin/user-history'
     | '/admin/user-profile'
     | '/admin/users'
+    | '/user/active-investments'
     | '/user/apps'
     | '/user/chats'
     | '/user/dashboard'
+    | '/user/investment-area'
     | '/user/settings'
     | '/user/tasks'
     | '/user/users'
@@ -1035,9 +1073,11 @@ export interface FileRouteTypes {
     | '/admin/user-history'
     | '/admin/user-profile'
     | '/admin/users'
+    | '/user/active-investments'
     | '/user/apps'
     | '/user/chats'
     | '/user/dashboard'
+    | '/user/investment-area'
     | '/user/settings'
     | '/user/tasks'
     | '/user/users'
@@ -1085,9 +1125,11 @@ export interface RootRouteChildren {
   AdminUserHistoryRoute: typeof AdminUserHistoryRoute
   AdminUserProfileRoute: typeof AdminUserProfileRoute
   AdminUsersRoute: typeof AdminUsersRoute
+  UserActiveInvestmentsRoute: typeof UserActiveInvestmentsRoute
   UserAppsRoute: typeof UserAppsRoute
   UserChatsRoute: typeof UserChatsRoute
   UserDashboardRoute: typeof UserDashboardRoute
+  UserInvestmentAreaRoute: typeof UserInvestmentAreaRoute
   UserSettingsRoute: typeof UserSettingsRoute
   UserTasksRoute: typeof UserTasksRoute
   UserUsersRoute: typeof UserUsersRoute
@@ -1124,9 +1166,11 @@ const rootRouteChildren: RootRouteChildren = {
   AdminUserHistoryRoute: AdminUserHistoryRoute,
   AdminUserProfileRoute: AdminUserProfileRoute,
   AdminUsersRoute: AdminUsersRoute,
+  UserActiveInvestmentsRoute: UserActiveInvestmentsRoute,
   UserAppsRoute: UserAppsRoute,
   UserChatsRoute: UserChatsRoute,
   UserDashboardRoute: UserDashboardRoute,
+  UserInvestmentAreaRoute: UserInvestmentAreaRoute,
   UserSettingsRoute: UserSettingsRoute,
   UserTasksRoute: UserTasksRoute,
   UserUsersRoute: UserUsersRoute,
@@ -1172,9 +1216,11 @@ export const routeTree = rootRoute
         "/admin/user-history",
         "/admin/user-profile",
         "/admin/users",
+        "/user/active-investments",
         "/user/apps",
         "/user/chats",
         "/user/dashboard",
+        "/user/investment-area",
         "/user/settings",
         "/user/tasks",
         "/user/users",
@@ -1292,6 +1338,9 @@ export const routeTree = rootRoute
     "/admin/users": {
       "filePath": "admin/users.tsx"
     },
+    "/user/active-investments": {
+      "filePath": "user/active-investments.tsx"
+    },
     "/user/apps": {
       "filePath": "user/apps.tsx"
     },
@@ -1300,6 +1349,9 @@ export const routeTree = rootRoute
     },
     "/user/dashboard": {
       "filePath": "user/dashboard.tsx"
+    },
+    "/user/investment-area": {
+      "filePath": "user/investment-area.tsx"
     },
     "/user/settings": {
       "filePath": "user/settings.tsx"

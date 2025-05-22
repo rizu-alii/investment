@@ -3,6 +3,11 @@ interface Props {
 }
 
 export default function AuthLayout({ children }: Props) {
+  // Determine heading based on route
+  let heading = 'Sign Up';
+  if (typeof window !== 'undefined' && (window.location.pathname === '/sign-in' || window.location.pathname === '/user/sign-in')) {
+    heading = 'Sign In';
+  }
   return (
     <div className='bg-primary-foreground container grid h-svh max-w-none items-center justify-center'>
       <div className='mx-auto flex w-full flex-col justify-center space-y-2 py-8 sm:w-[480px] sm:p-8'>
@@ -19,7 +24,7 @@ export default function AuthLayout({ children }: Props) {
           >
             <path d='M15 6v12a3 3 0 1 0 3-3H6a3 3 0 1 0 3 3V6a3 3 0 1 0-3 3h12a3 3 0 1 0-3-3' />
           </svg>
-          <h1 className='text-xl font-medium'>Sign Up</h1>
+          <h1 className='text-xl font-medium'>{heading}</h1>
         </div>
         {children}
       </div>
