@@ -81,12 +81,7 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
         <PasswordInput name='password' placeholder='********' required />
       </div>
       <div className='relative'>
-        <Link
-          to='/forgot-password'
-          className='text-muted-foreground absolute right-0 text-sm font-medium hover:opacity-75'
-        >
-          Forgot password?
-        </Link>
+        {/* Forgot password link removed */}
       </div>
       {error && <div className='text-red-600 text-sm'>{error}</div>}
       <Button className='mt-2' disabled={isLoading} type='submit'>

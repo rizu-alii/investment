@@ -345,7 +345,7 @@ export default function Users() {
                 <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
                   {editDialogOpen && (
                     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 z-50">
-                      <form ref={editFormRef} onSubmit={handleEditSave} className="bg-white p-6 rounded shadow-lg w-full max-w-lg space-y-4">
+                      <form ref={editFormRef} onSubmit={handleEditSave} className="bg-white dark:bg-[#18181b] p-6 rounded shadow-lg w-full max-w-lg space-y-4">
                         <h3 className="text-lg font-semibold mb-2">Edit Investment Package</h3>
                         <Input name="name" value={form.name} onChange={handleChange} placeholder="Name" />
                         <Input name="category" value={form.category} onChange={handleChange} placeholder="Category" />

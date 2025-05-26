@@ -153,13 +153,13 @@ export function UsersActionDialog({ currentRow, open, onOpenChange }: Props) {
                 name='firstName'
                 render={({ field }) => (
                   <FormItem className='grid grid-cols-6 items-center space-y-0 gap-x-4 gap-y-1'>
-                    <FormLabel className='col-span-2 text-right'>
+                    <FormLabel className='col-span-2 text-right dark:text-white'>
                       First Name
                     </FormLabel>
                     <FormControl>
                       <Input
                         placeholder='John'
-                        className='col-span-4'
+                        className='col-span-4 dark:text-white dark:placeholder:text-gray-400'
                         autoComplete='off'
                         {...field}
                       />
@@ -173,13 +173,13 @@ export function UsersActionDialog({ currentRow, open, onOpenChange }: Props) {
                 name='lastName'
                 render={({ field }) => (
                   <FormItem className='grid grid-cols-6 items-center space-y-0 gap-x-4 gap-y-1'>
-                    <FormLabel className='col-span-2 text-right'>
+                    <FormLabel className='col-span-2 text-right dark:text-white'>
                       Last Name
                     </FormLabel>
                     <FormControl>
                       <Input
                         placeholder='Doe'
-                        className='col-span-4'
+                        className='col-span-4 dark:text-white dark:placeholder:text-gray-400'
                         autoComplete='off'
                         {...field}
                       />
@@ -193,13 +193,13 @@ export function UsersActionDialog({ currentRow, open, onOpenChange }: Props) {
                 name='username'
                 render={({ field }) => (
                   <FormItem className='grid grid-cols-6 items-center space-y-0 gap-x-4 gap-y-1'>
-                    <FormLabel className='col-span-2 text-right'>
+                    <FormLabel className='col-span-2 text-right dark:text-white'>
                       Username
                     </FormLabel>
                     <FormControl>
                       <Input
                         placeholder='john_doe'
-                        className='col-span-4'
+                        className='col-span-4 dark:text-white dark:placeholder:text-gray-400'
                         {...field}
                       />
                     </FormControl>
@@ -212,13 +212,13 @@ export function UsersActionDialog({ currentRow, open, onOpenChange }: Props) {
                 name='email'
                 render={({ field }) => (
                   <FormItem className='grid grid-cols-6 items-center space-y-0 gap-x-4 gap-y-1'>
-                    <FormLabel className='col-span-2 text-right'>
+                    <FormLabel className='col-span-2 text-right dark:text-white'>
                       Email
                     </FormLabel>
                     <FormControl>
                       <Input
                         placeholder='john.doe@gmail.com'
-                        className='col-span-4'
+                        className='col-span-4 dark:text-white dark:placeholder:text-gray-400'
                         {...field}
                       />
                     </FormControl>
@@ -231,13 +231,13 @@ export function UsersActionDialog({ currentRow, open, onOpenChange }: Props) {
                 name='phoneNumber'
                 render={({ field }) => (
                   <FormItem className='grid grid-cols-6 items-center space-y-0 gap-x-4 gap-y-1'>
-                    <FormLabel className='col-span-2 text-right'>
+                    <FormLabel className='col-span-2 text-right dark:text-white'>
                       Phone Number
                     </FormLabel>
                     <FormControl>
                       <Input
                         placeholder='+123456789'
-                        className='col-span-4'
+                        className='col-span-4 dark:text-white dark:placeholder:text-gray-400'
                         {...field}
                       />
                     </FormControl>
@@ -250,7 +250,7 @@ export function UsersActionDialog({ currentRow, open, onOpenChange }: Props) {
                 name='role'
                 render={({ field }) => (
                   <FormItem className='grid grid-cols-6 items-center space-y-0 gap-x-4 gap-y-1'>
-                    <FormLabel className='col-span-2 text-right'>
+                    <FormLabel className='col-span-2 text-right dark:text-white'>
                       Role
                     </FormLabel>
                     <SelectDropdown
@@ -272,13 +272,13 @@ export function UsersActionDialog({ currentRow, open, onOpenChange }: Props) {
                 name='password'
                 render={({ field }) => (
                   <FormItem className='grid grid-cols-6 items-center space-y-0 gap-x-4 gap-y-1'>
-                    <FormLabel className='col-span-2 text-right'>
+                    <FormLabel className='col-span-2 text-right dark:text-white'>
                       Password
                     </FormLabel>
                     <FormControl>
                       <PasswordInput
                         placeholder='e.g., S3cur3P@ssw0rd'
-                        className='col-span-4'
+                        className='col-span-4 dark:text-white dark:placeholder:text-gray-400'
                         {...field}
                       />
                     </FormControl>
@@ -291,14 +291,14 @@ export function UsersActionDialog({ currentRow, open, onOpenChange }: Props) {
                 name='confirmPassword'
                 render={({ field }) => (
                   <FormItem className='grid grid-cols-6 items-center space-y-0 gap-x-4 gap-y-1'>
-                    <FormLabel className='col-span-2 text-right'>
+                    <FormLabel className='col-span-2 text-right dark:text-white'>
                       Confirm Password
                     </FormLabel>
                     <FormControl>
                       <PasswordInput
                         disabled={!isPasswordTouched}
                         placeholder='e.g., S3cur3P@ssw0rd'
-                        className='col-span-4'
+                        className='col-span-4 dark:text-white dark:placeholder:text-gray-400'
                         {...field}
                       />
                     </FormControl>
