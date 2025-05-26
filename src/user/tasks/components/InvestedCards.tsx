@@ -1,91 +1,44 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { InvestmentDetail } from "./InvestmentDetail";
 
-const investedDemoData = [
-  {
-    id: 1,
-    name: "Prudential FMCG Fund - Growth",
-    type: "Equity",
-    status: "Active",
-    totalProfit: "+12,000",
-    currentProfit: "+3,000",
-    introduction: "A leading FMCG fund with a strong track record.",
-    projectedProfitability: "+3.29%",
-    dates: "01/01/2023 - 01/01/2024",
-    history: [
-      { date: '01/01/2023', type: 'Deposit', amount: '+10,000' },
-      { date: '06/01/2023', type: 'Withdrawal', amount: '-2,000' },
-      { date: '12/01/2023', type: 'Deposit', amount: '+5,000' },
-    ],
-    technicalDetails: "Managed by ABC Asset Management."
-  },
-  {
-    id: 2,
-    name: "Index Sensex Direct Plan-Growth",
-    type: "Equity",
-    status: "Active",
-    totalProfit: "+25,000",
-    currentProfit: "+7,000",
-    introduction: "Direct exposure to Sensex index growth.",
-    projectedProfitability: "+23.37%",
-    dates: "01/02/2023 - 01/02/2024",
-    history: [
-      { date: '01/02/2023', type: 'Deposit', amount: '+20,000' },
-      { date: '07/02/2023', type: 'Deposit', amount: '+5,000' },
-    ],
-    technicalDetails: "Low expense ratio, passive management."
-  },
-  {
-    id: 3,
-    name: "Index Sensex Direct",
-    type: "Equity",
-    status: "Inactive",
-    totalProfit: "+8,000",
-    currentProfit: "+1,200",
-    introduction: "Sensex direct investment, high volatility.",
-    projectedProfitability: "+18.70%",
-    dates: "01/03/2023 - 01/03/2024",
-    history: [
-      { date: '01/03/2023', type: 'Deposit', amount: '+8,000' },
-    ],
-    technicalDetails: "No lock-in period."
-  },
-  {
-    id: 4,
-    name: "Market Fund Direct-Growth",
-    type: "Debt",
-    status: "Active",
-    totalProfit: "+10,500",
-    currentProfit: "+2,100",
-    introduction: "Stable returns with low risk.",
-    projectedProfitability: "+7.10%",
-    dates: "01/04/2023 - 01/04/2024",
-    history: [
-      { date: '01/04/2023', type: 'Deposit', amount: '+10,500' },
-    ],
-    technicalDetails: "Ideal for conservative investors."
-  },
-  {
-    id: 5,
-    name: "Liquid Fund Direct-Growth",
-    type: "Debt",
-    status: "Inactive",
-    totalProfit: "+6,000",
-    currentProfit: "+900",
-    introduction: "High liquidity, moderate returns.",
-    projectedProfitability: "+5.50%",
-    dates: "01/05/2023 - 01/05/2024",
-    history: [
-      { date: '01/05/2023', type: 'Deposit', amount: '+6,000' },
-    ],
-    technicalDetails: "Withdraw anytime."
-  },
-];
-
 export function InvestedCards() {
-  const [selected, setSelected] = useState<null | typeof investedDemoData[0]>(null);
+  const [investments, setInvestments] = useState<any[]>([]);
+  const [selected, setSelected] = useState<any | null>(null);
+  const [apiMessage, setApiMessage] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchActiveInvestments = async () => {
+      const token = localStorage.getItem('jwtToken');
+      if (!token) {
+        window.location.href = '/sign-in';
+        return;
+      }
+      setApiMessage(null);
+      try {
+        const response = await fetch('http://localhost:8080/api/user/active-investments', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+        });
+        if (response.status === 401) {
+          window.location.href = '/sign-in';
+          return;
+        }
+        const data = await response.json();
+        if (response.ok && Array.isArray(data)) {
+          setInvestments(data);
+        } else {
+          setApiMessage('Failed to fetch active investments.');
+        }
+      } catch (err) {
+        setApiMessage('Network error. Please try again.');
+      }
+    };
+    fetchActiveInvestments();
+  }, []);
 
   if (selected) {
     return <InvestmentDetail investment={selected} onBack={() => setSelected(null)} />;
@@ -93,16 +46,21 @@ export function InvestedCards() {
 
   return (
     <div className="space-y-4">
-      {investedDemoData.map((inv) => (
+      {apiMessage && (
+        <div className="mb-4 p-3 rounded mx-auto max-w-2xl text-center bg-red-50 text-red-700">
+          {apiMessage}
+        </div>
+      )}
+      {investments.map((inv) => (
         <Card key={inv.id} className="flex flex-col md:flex-row items-center justify-between p-4">
           <CardContent className="flex-1 flex flex-col md:flex-row md:items-center md:space-x-8 p-0">
             <div className="flex-1">
-              <div className="font-semibold text-lg mb-1">{inv.name}</div>
+              <div className="font-semibold text-lg mb-1">{inv.investmentName}</div>
               <div className="flex space-x-6 text-sm text-muted-foreground mb-1">
-                <span>Type <span className="font-medium text-black dark:text-white">{inv.type}</span></span>
-                <span>Status <span className={`font-medium ${inv.status === 'Active' ? 'text-green-600' : 'text-red-600'}`}>{inv.status}</span></span>
-                <span>Total Profit <span className="font-medium text-green-600">{inv.totalProfit}</span></span>
-                <span>Current Profit <span className="font-medium text-blue-600">{inv.currentProfit}</span></span>
+                <span>Type <span className="font-medium text-black dark:text-white">{inv.category}</span></span>
+                <span>Status <span className="font-medium text-green-600">ACTIVE</span></span>
+                <span>Total Profit <span className="font-medium text-green-600">{inv.currentProfit}</span></span>
+                <span>Duration <span className="font-medium text-blue-600">{inv.durationInMonths} months</span></span>
               </div>
             </div>
             <div className="flex flex-col md:flex-row md:items-center md:space-x-4 mt-4 md:mt-0">

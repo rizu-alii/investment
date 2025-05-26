@@ -18,7 +18,7 @@ export default function Users() {
         <AppSidebar data={sidebarData} />
         <div className="ml-auto w-full max-w-full flex h-svh flex-col">
           <Header fixed>
-            <Search />
+            {/* <Search /> */}
             <div className='ml-auto flex items-center space-x-4'>
               <ThemeSwitch />
               <ProfileDropdown />

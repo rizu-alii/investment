@@ -10,6 +10,7 @@ import {
   DialogDescription,
   DialogClose,
 } from "@/components/ui/dialog";
+import { toast } from 'sonner';
 
 export function InvestmentDetail({ investment, onBack }: { investment: any, onBack: () => void }) {
   const [openDialog, setOpenDialog] = useState<null | "deposit" | "withdraw">(null);
@@ -22,8 +23,76 @@ export function InvestmentDetail({ investment, onBack }: { investment: any, onBa
     setOpenDialog(type);
   };
 
-  const handleConfirm = () => {
-    // Handle deposit/withdraw logic here
+  const handleConfirm = async () => {
+    if (!amount || isNaN(Number(amount)) || Number(amount) <= 0) {
+      toast.error('Please enter a valid amount.');
+      return;
+    }
+    if (!openDialog) return;
+    if (openDialog === 'withdraw') {
+      // Withdraw logic
+      const token = localStorage.getItem('jwtToken');
+      if (!token) {
+        window.location.href = '/sign-in';
+        return;
+      }
+      try {
+        const response = await fetch(`http://localhost:8080/api/user/withdraw/${investment.id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+          },
+          body: JSON.stringify({ amount: Number(amount) }),
+        });
+        const data = await response.json();
+        if (response.status === 401) {
+          window.location.href = '/sign-in';
+          return;
+        }
+        if (response.ok) {
+          toast.success(data.message || 'Withdrawal request submitted.');
+          window.location.reload();
+        } else {
+          toast.error(data.message || 'Withdrawal failed.');
+        }
+      } catch (err) {
+        toast.error('Network error. Please try again.');
+      }
+    } else if (openDialog === 'deposit') {
+      // Deposit logic
+      const token = localStorage.getItem('jwtToken');
+      if (!token) {
+        window.location.href = '/sign-in';
+        return;
+      }
+      try {
+        const response = await fetch('http://localhost:8080/api/user/investments/deposit', {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            activeInvestmentId: investment.id,
+            amount: Number(amount)
+          }),
+        });
+        const data = await response.json();
+        if (response.status === 401) {
+          window.location.href = '/sign-in';
+          return;
+        }
+        if (response.ok) {
+          toast.success(data.message || 'Deposit successful.');
+          window.location.reload();
+        } else {
+          toast.error(data.message || 'Deposit failed.');
+        }
+      } catch (err) {
+        toast.error('Network error. Please try again.');
+      }
+    }
     setOpenDialog(null);
     setAmount("");
   };
@@ -39,47 +108,56 @@ export function InvestmentDetail({ investment, onBack }: { investment: any, onBa
       </div>
       <Card>
         <CardContent className="p-6">
-          <h2 className="text-2xl font-bold mb-2">{investment.name}</h2>
-          <p className="mb-4 text-muted-foreground">Institutional Introduction: {investment.introduction || "This is a brief presentation of the selected investment with additional context."}</p>
+          <h2 className="text-2xl font-bold mb-2">{investment.investmentName}</h2>
           <div className="mb-4">
-            <span className="font-semibold">Type:</span> {investment.type}
+            <span className="font-semibold">Category:</span> {investment.category}
           </div>
           <div className="mb-4">
-            <span className="font-semibold">Projected Profitability:</span> {investment.projectedProfitability || investment.totalProfit}
+            <span className="font-semibold">Fund Size:</span> {investment.fundSize}
           </div>
           <div className="mb-4">
-            <span className="font-semibold">Status:</span> <span className={investment.status === 'Active' ? 'text-green-600' : 'text-red-600'}>{investment.status}</span>
+            <span className="font-semibold">Risk Level:</span> {investment.riskLevel}
           </div>
           <div className="mb-4">
-            <span className="font-semibold">Important Dates:</span> {investment.dates || '01/01/2023 - 01/01/2024'}
+            <span className="font-semibold">Projected Return:</span> {investment.projectedReturn ? `${(investment.projectedReturn * 100).toFixed(2)}%` : 'N/A'}
           </div>
           <div className="mb-4">
-            <span className="font-semibold">History of Deposits/Withdrawals:</span>
+            <span className="font-semibold">Status:</span> <span className="text-green-600">ACTIVE</span>
+          </div>
+          <div className="mb-4">
+            <span className="font-semibold">Amount Invested:</span> {investment.amount}
+          </div>
+          <div className="mb-4">
+            <span className="font-semibold">Current Profit:</span> {investment.currentProfit}
+          </div>
+          <div className="mb-4">
+            <span className="font-semibold">Start Date:</span> {investment.startDate ? new Date(investment.startDate).toLocaleString() : 'N/A'}
+          </div>
+          <div className="mb-4">
+            <span className="font-semibold">Duration (months):</span> {investment.durationInMonths}
+          </div>
+          <div className="mb-4">
+            <span className="font-semibold">Transaction History:</span>
             <table className="min-w-full mt-2 border text-sm">
               <thead>
                 <tr className="bg-muted">
                   <th className="px-3 py-2 text-left font-semibold">Date</th>
                   <th className="px-3 py-2 text-left font-semibold">Type</th>
                   <th className="px-3 py-2 text-left font-semibold">Amount</th>
+                  <th className="px-3 py-2 text-left font-semibold">Status</th>
                 </tr>
               </thead>
               <tbody>
-                {(investment.history || [
-                  { date: '01/01/2023', type: 'Deposit', amount: '+10,000' },
-                  { date: '06/01/2023', type: 'Withdrawal', amount: '-2,000' },
-                  { date: '12/01/2023', type: 'Deposit', amount: '+5,000' },
-                ]).map((item: any, idx: number) => (
+                {(investment.transactions || []).map((item: any, idx: number) => (
                   <tr key={idx} className="border-t">
-                    <td className="px-3 py-2">{item.date}</td>
+                    <td className="px-3 py-2">{item.createdAt ? new Date(item.createdAt).toLocaleString() : ''}</td>
                     <td className="px-3 py-2">{item.type}</td>
                     <td className="px-3 py-2">{item.amount}</td>
+                    <td className="px-3 py-2">{item.status}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
-          </div>
-          <div className="mb-4">
-            <span className="font-semibold">Other Technical Details:</span> {investment.technicalDetails || 'N/A'}
           </div>
         </CardContent>
       </Card>

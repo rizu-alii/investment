@@ -18,7 +18,7 @@ function AdminLogin() {
           <CardDescription>
             Enter your admin email and password below to <br />
           
-            log into the admin dashboard                   
+            log into the admin dashboard                        
           </CardDescription>
         </CardHeader>
         <CardContent>

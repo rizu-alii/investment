@@ -6,8 +6,46 @@ import { Textarea } from "@/components/ui/textarea";
 import { HomeHeader } from "../home/components/HomeHeader";
 import { HomeFooter } from "../home/components/HomeFooter";
 import { MapPin, Phone, Mail } from "lucide-react";
+import { useState } from "react";
 
 export function ContactPage() {
+  const [form, setForm] = useState({ name: '', email: '', subject: '', message: '' });
+  const [loading, setLoading] = useState(false);
+  const [feedback, setFeedback] = useState<{ type: 'success' | 'error', message: string } | null>(null);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setForm({ ...form, [e.target.id]: e.target.value });
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setFeedback(null);
+    setLoading(true);
+    try {
+      const response = await fetch('http://localhost:8080/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: form.name,
+          email: form.email,
+          subject: form.subject,
+          description: form.message,
+        }),
+      });
+      const text = await response.text();
+      if (response.ok) {
+        setFeedback({ type: 'success', message: text || 'Email sent successfully.' });
+        setForm({ name: '', email: '', subject: '', message: '' });
+      } else {
+        setFeedback({ type: 'error', message: text || 'Failed to send email.' });
+      }
+    } catch (err) {
+      setFeedback({ type: 'error', message: 'Network error. Please try again.' });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <HomeHeader />
@@ -22,24 +60,27 @@ export function ContactPage() {
         <div className="mx-auto mt-12 grid gap-8 md:grid-cols-2 lg:max-w-[64rem]">
           <Card>
             <CardContent className="p-6">
-              <form className="space-y-6">
+              {feedback && (
+                <div className={`mb-2 p-2 rounded text-center ${feedback.type === 'success' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>{feedback.message}</div>
+              )}
+              <form className="space-y-6" onSubmit={handleSubmit}>
                 <div className="space-y-2">
                   <Label htmlFor="name">Name</Label>
-                  <Input id="name" placeholder="Enter your name" />
+                  <Input id="name" placeholder="Enter your name" value={form.name} onChange={handleChange} />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="email">Email</Label>
-                  <Input id="email" type="email" placeholder="Enter your email" />
+                  <Input id="email" type="email" placeholder="Enter your email" value={form.email} onChange={handleChange} />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="subject">Subject</Label>
-                  <Input id="subject" placeholder="Enter subject" />
+                  <Input id="subject" placeholder="Enter subject" value={form.subject} onChange={handleChange} />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="message">Message</Label>
-                  <Textarea id="message" placeholder="Enter your message" className="min-h-[150px]" />
+                  <Textarea id="message" placeholder="Enter your message" className="min-h-[150px]" value={form.message} onChange={handleChange} />
                 </div>
-                <Button className="w-full">Send Message</Button>
+                <Button className="w-full" type="submit" disabled={loading}>{loading ? 'Sending...' : 'Send Message'}</Button>
               </form>
             </CardContent>
           </Card>

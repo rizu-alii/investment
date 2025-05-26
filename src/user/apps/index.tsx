@@ -152,4 +152,5 @@ export default function Apps() {
       </SidebarProvider>
     </SearchProvider>
   )
-} 
+}
+

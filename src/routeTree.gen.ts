@@ -22,6 +22,7 @@ import { Route as BlogIndexImport } from './routes/blog/index'
 import { Route as UserUsersImport } from './routes/user/users'
 import { Route as UserTasksImport } from './routes/user/tasks'
 import { Route as UserSettingsImport } from './routes/user/settings'
+import { Route as UserProfileImport } from './routes/user/profile'
 import { Route as UserInvestmentAreaImport } from './routes/user/investment-area'
 import { Route as UserDashboardImport } from './routes/user/dashboard'
 import { Route as UserChatsImport } from './routes/user/chats'
@@ -126,6 +127,12 @@ const UserTasksRoute = UserTasksImport.update({
 const UserSettingsRoute = UserSettingsImport.update({
   id: '/user/settings',
   path: '/user/settings',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const UserProfileRoute = UserProfileImport.update({
+  id: '/user/profile',
+  path: '/user/profile',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -628,6 +635,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof UserInvestmentAreaImport
       parentRoute: typeof rootRoute
     }
+    '/user/profile': {
+      id: '/user/profile'
+      path: '/user/profile'
+      fullPath: '/user/profile'
+      preLoaderRoute: typeof UserProfileImport
+      parentRoute: typeof rootRoute
+    }
     '/user/settings': {
       id: '/user/settings'
       path: '/user/settings'
@@ -814,6 +828,7 @@ export interface FileRoutesByFullPath {
   '/user/chats': typeof UserChatsRoute
   '/user/dashboard': typeof UserDashboardRoute
   '/user/investment-area': typeof UserInvestmentAreaRoute
+  '/user/profile': typeof UserProfileRoute
   '/user/settings': typeof UserSettingsRoute
   '/user/tasks': typeof UserTasksRoute
   '/user/users': typeof UserUsersRoute
@@ -866,6 +881,7 @@ export interface FileRoutesByTo {
   '/user/chats': typeof UserChatsRoute
   '/user/dashboard': typeof UserDashboardRoute
   '/user/investment-area': typeof UserInvestmentAreaRoute
+  '/user/profile': typeof UserProfileRoute
   '/user/settings': typeof UserSettingsRoute
   '/user/tasks': typeof UserTasksRoute
   '/user/users': typeof UserUsersRoute
@@ -920,6 +936,7 @@ export interface FileRoutesById {
   '/user/chats': typeof UserChatsRoute
   '/user/dashboard': typeof UserDashboardRoute
   '/user/investment-area': typeof UserInvestmentAreaRoute
+  '/user/profile': typeof UserProfileRoute
   '/user/settings': typeof UserSettingsRoute
   '/user/tasks': typeof UserTasksRoute
   '/user/users': typeof UserUsersRoute
@@ -975,6 +992,7 @@ export interface FileRouteTypes {
     | '/user/chats'
     | '/user/dashboard'
     | '/user/investment-area'
+    | '/user/profile'
     | '/user/settings'
     | '/user/tasks'
     | '/user/users'
@@ -1026,6 +1044,7 @@ export interface FileRouteTypes {
     | '/user/chats'
     | '/user/dashboard'
     | '/user/investment-area'
+    | '/user/profile'
     | '/user/settings'
     | '/user/tasks'
     | '/user/users'
@@ -1078,6 +1097,7 @@ export interface FileRouteTypes {
     | '/user/chats'
     | '/user/dashboard'
     | '/user/investment-area'
+    | '/user/profile'
     | '/user/settings'
     | '/user/tasks'
     | '/user/users'
@@ -1130,6 +1150,7 @@ export interface RootRouteChildren {
   UserChatsRoute: typeof UserChatsRoute
   UserDashboardRoute: typeof UserDashboardRoute
   UserInvestmentAreaRoute: typeof UserInvestmentAreaRoute
+  UserProfileRoute: typeof UserProfileRoute
   UserSettingsRoute: typeof UserSettingsRoute
   UserTasksRoute: typeof UserTasksRoute
   UserUsersRoute: typeof UserUsersRoute
@@ -1171,6 +1192,7 @@ const rootRouteChildren: RootRouteChildren = {
   UserChatsRoute: UserChatsRoute,
   UserDashboardRoute: UserDashboardRoute,
   UserInvestmentAreaRoute: UserInvestmentAreaRoute,
+  UserProfileRoute: UserProfileRoute,
   UserSettingsRoute: UserSettingsRoute,
   UserTasksRoute: UserTasksRoute,
   UserUsersRoute: UserUsersRoute,
@@ -1221,6 +1243,7 @@ export const routeTree = rootRoute
         "/user/chats",
         "/user/dashboard",
         "/user/investment-area",
+        "/user/profile",
         "/user/settings",
         "/user/tasks",
         "/user/users",
@@ -1352,6 +1375,9 @@ export const routeTree = rootRoute
     },
     "/user/investment-area": {
       "filePath": "user/investment-area.tsx"
+    },
+    "/user/profile": {
+      "filePath": "user/profile.tsx"
     },
     "/user/settings": {
       "filePath": "user/settings.tsx"

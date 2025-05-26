@@ -1,7 +1,7 @@
 import { SearchProvider } from '@/context/search-context'
 import { SidebarProvider } from '@/components/ui/sidebar'
 import { AppSidebar } from '@/components/layout/app-sidebar'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import {
   IconAdjustmentsHorizontal,
   IconSortAscendingLetters,
@@ -27,6 +27,7 @@ import Cookies from 'js-cookie'
 import { adminSidebarData } from '@/components/layout/data/sidebar-data'
 import { Card, CardContent } from '@/components/ui/card'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, BarChart, Bar, PieChart, Pie, Cell } from 'recharts'
+import { toast } from 'sonner'
 
 const appText = new Map<string, string>([
   ['all', 'All Apps'],
@@ -34,43 +35,26 @@ const appText = new Map<string, string>([
   ['notConnected', 'Not Connected'],
 ])
 
-const visitorsData = [
-  { date: '2024-05-15', unique: 120, returning: 40 },
-  { date: '2024-05-16', unique: 150, returning: 60 },
-  { date: '2024-05-17', unique: 180, returning: 80 },
-  { date: '2024-05-18', unique: 200, returning: 90 },
-  { date: '2024-05-19', unique: 170, returning: 70 },
-  { date: '2024-05-20', unique: 210, returning: 100 },
-]
+// Devices data will be fetched from API
 
-const devicesData = [
-  { name: 'Desktop', value: 400 },
-  { name: 'Mobile', value: 300 },
-  { name: 'Tablet', value: 100 },
-]
-const deviceColors = ['#8884d8', '#82ca9d', '#ffc658']
+// Countries data will be fetched from API
 
-const countriesData = [
-  { country: 'USA', visitors: 220 },
-  { country: 'India', visitors: 180 },
-  { country: 'UK', visitors: 90 },
-  { country: 'Germany', visitors: 60 },
-  { country: 'Canada', visitors: 50 },
-]
+// Latest logins will be fetched from API
 
-const latestLogins = [
-  { user: 'John Doe', country: 'USA', device: 'Desktop', time: '2024-05-20 10:15' },
-  { user: 'Jane Smith', country: 'India', device: 'Mobile', time: '2024-05-20 09:50' },
-  { user: 'Alice Johnson', country: 'UK', device: 'Tablet', time: '2024-05-20 09:30' },
-  { user: 'Bob Lee', country: 'Germany', device: 'Desktop', time: '2024-05-20 08:45' },
-  { user: 'Maria Garcia', country: 'Canada', device: 'Mobile', time: '2024-05-20 08:20' },
-]
+const deviceColors = ['#8884d8', '#82ca9d'];
 
 export default function AdminAppsAnalytics() {
   const defaultOpen = Cookies.get('sidebar_state') !== 'false'
   const [sort, setSort] = useState('ascending')
   const [appType, setAppType] = useState('all')
   const [searchTerm, setSearchTerm] = useState('')
+  const [graph, setGraph] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [devicesData, setDevicesData] = useState<any[]>([])
+  const [countriesData, setCountriesData] = useState<any[]>([])
+  const [latestLogins, setLatestLogins] = useState<any[]>([])
+  const [statsError, setStatsError] = useState<string | null>(null)
 
   const filteredApps = apps
     .sort((a, b) =>
@@ -86,6 +70,95 @@ export default function AdminAppsAnalytics() {
           : true
     )
     .filter((app) => app.name.toLowerCase().includes(searchTerm.toLowerCase()))
+
+  useEffect(() => {
+    const fetchGraph = async () => {
+      const token = localStorage.getItem('jwtToken')
+      if (!token) {
+        window.location.href = '/admin/login'
+        return
+      }
+      setLoading(true)
+      setError(null)
+      try {
+        const response = await fetch('http://localhost:8080/api/admin/dashboard-data', {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        })
+        if (response.status === 401) {
+          window.location.href = '/admin/login'
+          return
+        }
+        if (!response.ok) {
+          setError('Failed to fetch analytics data.')
+          toast.error('Failed to fetch analytics data.')
+          setLoading(false)
+          return
+        }
+        const data = await response.json()
+        setGraph(Array.isArray(data.graphData) ? data.graphData : [])
+      } catch (err) {
+        setError('Network error. Please try again.')
+        toast.error('Network error. Please try again.')
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchGraph()
+  }, [])
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      const token = localStorage.getItem('jwtToken')
+      if (!token) {
+        window.location.href = '/admin/login'
+        return
+      }
+      setStatsError(null)
+      try {
+        const response = await fetch('http://localhost:8080/api/auth/login-stats', {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        })
+        if (response.status === 401) {
+          setStatsError('Unauthorized. Please login again.')
+          window.location.href = '/admin/login'
+          return
+        }
+        if (!response.ok) {
+          setStatsError('Failed to fetch login stats.')
+          toast.error('Failed to fetch login stats.')
+          return
+        }
+        const data = await response.json()
+        setDevicesData([
+          { name: 'Desktop', value: data.desktopLogins || 0 },
+          { name: 'Mobile', value: data.mobileLogins || 0 },
+        ])
+        setCountriesData(
+          Object.entries(data.loginsByCountry || {}).map(([country, visitors]) => ({ country, visitors }))
+        )
+        setLatestLogins(
+          (data.last5UniqueUserLogins || []).map((login: any) => ({
+            user: login.username,
+            country: login.country,
+            device: login.device,
+            time: login.loginTime ? new Date(login.loginTime).toLocaleString() : '',
+          }))
+        )
+      } catch (err) {
+        setStatsError('Network error. Please try again.')
+        toast.error('Network error. Please try again.')
+      }
+    }
+    fetchStats()
+  }, [])
 
   return (
     <SearchProvider>
@@ -106,23 +179,30 @@ export default function AdminAppsAnalytics() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
               <Card>
                 <CardContent className="p-6">
-                  <h3 className="font-semibold mb-2">Unique Visitors & Visit Frequency</h3>
-                  <ResponsiveContainer width="100%" height={250}>
-                    <LineChart data={visitorsData} margin={{ top: 20, right: 30, left: 0, bottom: 0 }}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="date" />
-                      <YAxis />
-                      <Tooltip />
-                      <Legend />
-                      <Line type="monotone" dataKey="unique" stroke="#8884d8" name="Unique Visitors" />
-                      <Line type="monotone" dataKey="returning" stroke="#82ca9d" name="Returning Visitors" />
-                    </LineChart>
-                  </ResponsiveContainer>
+                  <h3 className="font-semibold mb-2">Visits This Week</h3>
+                  {loading ? (
+                    <div className="p-4">Loading...</div>
+                  ) : error ? (
+                    <div className="p-4 text-red-600">{error}</div>
+                  ) : (
+                    <ResponsiveContainer width="100%" height={250}>
+                      <LineChart data={graph} margin={{ top: 20, right: 30, left: 0, bottom: 0 }}>
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="day" />
+                        <YAxis />
+                        <Tooltip />
+                        <Line type="monotone" dataKey="webTraffic" stroke="#8884d8" name="Visitors" />
+                      </LineChart>
+                    </ResponsiveContainer>
+                  )}
                 </CardContent>
               </Card>
               <Card>
                 <CardContent className="p-6">
                   <h3 className="font-semibold mb-2">Devices</h3>
+                  {statsError ? (
+                    <div className="p-4 text-red-600">{statsError}</div>
+                  ) : (
                   <ResponsiveContainer width="100%" height={250}>
                     <PieChart>
                       <Pie data={devicesData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={80} label>
@@ -133,6 +213,7 @@ export default function AdminAppsAnalytics() {
                       <Tooltip />
                     </PieChart>
                   </ResponsiveContainer>
+                  )}
                 </CardContent>
               </Card>
             </div>
@@ -140,6 +221,9 @@ export default function AdminAppsAnalytics() {
               <Card>
                 <CardContent className="p-6">
                   <h3 className="font-semibold mb-2">Countries of Origin</h3>
+                  {statsError ? (
+                    <div className="p-4 text-red-600">{statsError}</div>
+                  ) : (
                   <ResponsiveContainer width="100%" height={250}>
                     <BarChart data={countriesData} margin={{ top: 20, right: 30, left: 0, bottom: 0 }}>
                       <CartesianGrid strokeDasharray="3 3" />
@@ -150,11 +234,15 @@ export default function AdminAppsAnalytics() {
                       <Bar dataKey="visitors" fill="#8884d8" name="Visitors" />
                     </BarChart>
                   </ResponsiveContainer>
+                  )}
                 </CardContent>
               </Card>
               <Card>
                 <CardContent className="p-6">
                   <h3 className="font-semibold mb-2">Latest Logins</h3>
+                  {statsError ? (
+                    <div className="p-4 text-red-600">{statsError}</div>
+                  ) : (
                   <div className="overflow-x-auto">
                     <table className="min-w-full border text-sm">
                       <thead>
@@ -177,9 +265,10 @@ export default function AdminAppsAnalytics() {
                       </tbody>
                     </table>
                   </div>
+                  )}
                 </CardContent>
               </Card>
-                  </div>
+            </div>
           </Main>
         </div>
       </SidebarProvider>

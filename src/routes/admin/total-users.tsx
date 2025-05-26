@@ -15,10 +15,12 @@ function mapApiUser(user: any) {
   return {
     id: user.id,
     name: user.fullName || user.username || '',
+    username: user.username || '',
+    fullName: user.fullName || '',
     email: user.email || '',
     regDate: user.createdAt ? user.createdAt.split('T')[0] : '',
     investments: Array.isArray(user.userActiveInvestments) ? user.userActiveInvestments.length : 0,
-    suspended: user.enabled === false,
+    enabled: user.enabled,
   }
 }
 
@@ -34,7 +36,7 @@ function TotalUsers() {
   const [profileDialogOpen, setProfileDialogOpen] = useState(false)
   const [editDialogOpen, setEditDialogOpen] = useState(false)
   const [editUser, setEditUser] = useState<any | null>(null)
-  const [editForm, setEditForm] = useState({ username: '', fullName: '' })
+  const [editForm, setEditForm] = useState({ username: '', fullName: '', password: '', confirmPassword: '' })
   const [editLoading, setEditLoading] = useState(false)
   const [suspendDialogOpen, setSuspendDialogOpen] = useState(false)
   const [suspendUser, setSuspendUser] = useState<any | null>(null)
@@ -118,10 +120,11 @@ function TotalUsers() {
         return
       }
       const data = await response.json()
-      if (response.ok) {
-        toast.success(data.message || 'User status updated.')
-        setApiMessage(data.message || 'User status updated.')
-        setUsers(users => users.map(u => u.id === suspendUser.id ? { ...u, enabled: suspendAction === 'activate', suspended: suspendAction === 'suspend' } : u))
+      if (response.ok && data.status === 'OK') {
+        const msg = suspendAction === 'suspend' ? 'User has been suspended.' : 'User is now active.'
+        toast.success(data.message || msg)
+        setApiMessage(data.message || msg)
+        setUsers(users => users.map(u => u.id === suspendUser.id ? { ...u, enabled: suspendAction === 'activate' } : u))
       } else {
         toast.error(data.message || 'Failed to update user status.')
         setApiMessage(data.message || 'Failed to update user status.')
@@ -139,7 +142,7 @@ function TotalUsers() {
 
   const handleEditClick = (user: any) => {
     setEditUser(user)
-    setEditForm({ username: user.name, fullName: user.fullName || '' })
+    setEditForm({ username: user.username || '', fullName: user.fullName || '', password: '', confirmPassword: '' })
     setEditDialogOpen(true)
   }
 
@@ -166,6 +169,8 @@ function TotalUsers() {
         body: JSON.stringify({
           username: editForm.username,
           fullName: editForm.fullName,
+          password: editForm.password,
+          confirmPassword: editForm.confirmPassword,
         }),
       })
       if (response.status === 401) {
@@ -173,10 +178,10 @@ function TotalUsers() {
         return
       }
       const data = await response.json()
-      if (response.ok && data.data) {
+      if (response.ok && data.status === 'OK') {
         toast.success(data.message || 'User updated successfully.')
         setApiMessage(data.message || 'User updated successfully.')
-        setUsers(users => users.map(u => u.id === editUser.id ? { ...u, name: editForm.username, fullName: editForm.fullName } : u))
+        setUsers(users => users.map(u => u.id === editUser.id ? { ...u, name: editForm.fullName || editForm.username, fullName: editForm.fullName, username: editForm.username } : u))
         setEditDialogOpen(false)
         setEditUser(null)
       } else {
@@ -211,13 +216,6 @@ function TotalUsers() {
               onChange={e => setNameSearch(e.target.value)}
               className="border rounded px-3 py-2"
             />
-            <input
-              type="text"
-              placeholder="Search by email"
-              value={emailSearch}
-              onChange={e => setEmailSearch(e.target.value)}
-              className="border rounded px-3 py-2"
-            />
           </div>
           {apiMessage && (
             <div className="mb-4 p-3 rounded mx-auto max-w-2xl text-center bg-red-50 text-red-700">
@@ -242,33 +240,33 @@ function TotalUsers() {
                     <td className="px-3 py-2">{user.investments}</td>
                     <td className="px-3 py-2 space-x-2">
                       <button
-                        className="text-blue-600 px-2 py-1 rounded transition-colors hover:bg-blue-100"
+                        className="bg-blue-600 text-white px-2 py-1 rounded transition-colors hover:bg-blue-700"
                         onClick={() => { setSelectedUser(user); setProfileDialogOpen(true); }}
                       >
                         View Profile
                       </button>
                       <button
-                        className="text-green-600 px-2 py-1 rounded transition-colors hover:bg-green-100"
+                        className="bg-green-600 text-white px-2 py-1 rounded transition-colors hover:bg-green-700"
                         onClick={() => navigate({ to: '/admin/user-history', search: { id: String(user.id) } })}
                       >
                         History
                       </button>
                       <button
-                        className="text-yellow-600 px-2 py-1 rounded transition-colors hover:bg-yellow-100"
+                        className="bg-yellow-400 text-black px-2 py-1 rounded transition-colors hover:bg-yellow-500"
                         onClick={() => handleEditClick(user)}
                       >
                         Edit
                       </button>
                       {user.enabled ? (
                         <button
-                          className="text-red-600 px-2 py-1 rounded transition-colors hover:bg-red-100"
+                          className="bg-red-600 text-white px-2 py-1 rounded transition-colors hover:bg-red-700"
                           onClick={() => handleSuspendClick(user, 'suspend')}
                         >
                           Suspend
                         </button>
                       ) : (
                         <button
-                          className="text-green-600 px-2 py-1 rounded transition-colors hover:bg-green-100"
+                          className="bg-green-600 text-white px-2 py-1 rounded transition-colors hover:bg-green-700"
                           onClick={() => handleSuspendClick(user, 'activate')}
                         >
                           Make Active
@@ -298,7 +296,7 @@ function TotalUsers() {
           </Dialog>
           <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
             {editDialogOpen && editUser && (
-              <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 z-50">
+              <div className="fixed inset-0 flex items-center justify-center z-50">
                 <div className="bg-white p-6 rounded shadow-lg w-full max-w-md space-y-4">
                   <h3 className="text-lg font-semibold mb-2">Edit User</h3>
                   <div>
@@ -315,6 +313,26 @@ function TotalUsers() {
                     <input
                       name="fullName"
                       value={editForm.fullName}
+                      onChange={handleEditFormChange}
+                      className="w-full border rounded px-3 py-2"
+                    />
+                  </div>
+                  <div>
+                    <label className="block mb-1 font-medium">Password</label>
+                    <input
+                      name="password"
+                      type="password"
+                      value={editForm.password}
+                      onChange={handleEditFormChange}
+                      className="w-full border rounded px-3 py-2"
+                    />
+                  </div>
+                  <div>
+                    <label className="block mb-1 font-medium">Confirm Password</label>
+                    <input
+                      name="confirmPassword"
+                      type="password"
+                      value={editForm.confirmPassword}
                       onChange={handleEditFormChange}
                       className="w-full border rounded px-3 py-2"
                     />

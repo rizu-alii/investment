@@ -67,9 +67,46 @@ export function InvestmentsVisualization() {
     setMonths("");
   };
 
-  const handleConfirm = () => {
-    // You can handle the investment logic here
-    handleClose();
+  const handleConfirm = async () => {
+    if (!selectedInvestment || !amount || !months) return;
+    
+    const token = localStorage.getItem('jwtToken');
+    if (!token) {
+      window.location.href = '/sign-in';
+      return;
+    }
+
+    try {
+      const response = await fetch('http://localhost:8080/api/user/create', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          amount: parseFloat(amount),
+          durationInMonths: parseInt(months),
+          investmentId: selectedInvestment.id
+        }),
+      });
+
+      const data = await response.json();
+      
+      if (response.status === 401) {
+        window.location.href = '/sign-in';
+        return;
+      }
+      
+      if (response.ok) {
+        toast.success(data.message || 'Investment created successfully');
+        setApiMessage(data.message || 'Investment created successfully');
+        handleClose();
+      } else {
+        toast.error(data.message || 'Failed to create investment');
+      }
+    } catch (err) {
+      toast.error('Network error. Please try again.');
+    }
   };
 
   return (

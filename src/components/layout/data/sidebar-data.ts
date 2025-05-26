@@ -24,25 +24,22 @@ import { type SidebarData } from '../types'
 
 export const sidebarData: SidebarData = {
   user: {
-    name: 'satnaing',
+    name: 'OPESSOCIUS',
     email: '',
     avatar: '/avatars/shadcn.jpg',
   },
   teams: [
     {
-      name: 'Shadcn Admin',
+      name: 'OPESSOCIUS',
       logo: Command,
-      plan: 'Vite + ShadcnUI',
     },
     {
       name: 'Acme Inc',
       logo: GalleryVerticalEnd,
-      plan: 'Enterprise',
     },
     {
       name: 'Acme Corp.',
       logo: AudioWaveform,
-      plan: 'Startup',
     },
   ],
   navGroups: [
@@ -64,6 +61,11 @@ export const sidebarData: SidebarData = {
           url: '/user/users',
           icon: IconUsers,
         },
+        {
+          title: 'Profile',
+          url: '/user/profile',
+          icon: IconUserCog,
+        },
       ],
     },
   ],
@@ -71,25 +73,22 @@ export const sidebarData: SidebarData = {
 
 export const adminSidebarData: SidebarData = {
   user: {
-    name: 'admin',
+    name: 'OPESSOCIUS',
     email: '',
     avatar: '/avatars/admin.jpg',
   },
   teams: [
     {
-      name: 'Shadcn Admin',
+      name: 'OPESSOCIUS',
       logo: Command,
-      plan: 'Vite + ShadcnUI',
     },
     {
       name: 'Acme Inc',
       logo: GalleryVerticalEnd,
-      plan: 'Enterprise',
     },
     {
       name: 'Acme Corp.',
       logo: AudioWaveform,
-      plan: 'Startup',
     },
   ],
   navGroups: [
